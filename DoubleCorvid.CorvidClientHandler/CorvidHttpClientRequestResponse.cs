@@ -19,8 +19,10 @@
  * IN THE SOFTWARE.
  */
 
-namespace DoubleCorvid.CorvidClientHandler.Framework;
+using DoubleCorvid.CorvidClientHandler.Framework;
 
-public interface ICorvidHttpResponse {
-    HttpResponseMessage HttpResponseMessage { get; }
+namespace DoubleCorvid.CorvidClientHandler;
+
+public class CorvidHttpClientRequestResponse : ICorvidHttpClientRequestResponse {
+    public required HttpResponseMessage HttpResponseMessage { get; set; }
 }

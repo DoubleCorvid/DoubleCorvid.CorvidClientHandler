@@ -65,56 +65,56 @@ public class CorvidHttpClientHandler (ICorvidHttpClientHandlerConfig config, Htt
     ];
 
     #region Get
-    public async Task<ICorvidHttpResponse> GetAsync (ICorvidHttpClientRequestConfig requestConfig) {
+    public async Task<ICorvidHttpClientRequestResponse> GetAsync (ICorvidHttpClientRequestConfig requestConfig) {
         return await ExecuteRequest (requestConfig, ExecuteGetAsync);
     }
 
-    protected async Task<ICorvidHttpResponse> ExecuteGetAsync (ICorvidHttpClientRequestConfig requestConfig) => new CorvidHttpResponse {
+    protected async Task<ICorvidHttpClientRequestResponse> ExecuteGetAsync (ICorvidHttpClientRequestConfig requestConfig) => new CorvidHttpClientRequestResponse {
         HttpResponseMessage = await HttpClient.GetAsync (requestConfig.Route, requestConfig.HttpCompletionOption, requestConfig.CancellationToken)
     };
     #endregion
 
     #region Patch
-    public async Task<ICorvidHttpResponse> PatchAsync (ICorvidHttpClientRequestConfig requestConfig) {
+    public async Task<ICorvidHttpClientRequestResponse> PatchAsync (ICorvidHttpClientRequestConfig requestConfig) {
         return await ExecuteRequest (requestConfig, ExecutePatchAsync);
     }
 
-    protected async Task<ICorvidHttpResponse> ExecutePatchAsync (ICorvidHttpClientRequestConfig requestConfig) => new CorvidHttpResponse {
+    protected async Task<ICorvidHttpClientRequestResponse> ExecutePatchAsync (ICorvidHttpClientRequestConfig requestConfig) => new CorvidHttpClientRequestResponse {
         HttpResponseMessage = await HttpClient.PatchAsync (requestConfig.Route, requestConfig.Content, requestConfig.CancellationToken)
     };
     #endregion
 
     #region Post
-    public async Task<ICorvidHttpResponse> PostAsync (ICorvidHttpClientRequestConfig requestConfig) {
+    public async Task<ICorvidHttpClientRequestResponse> PostAsync (ICorvidHttpClientRequestConfig requestConfig) {
         return await ExecuteRequest (requestConfig, ExecutePostAsync);
     }
 
-    protected async Task<ICorvidHttpResponse> ExecutePostAsync (ICorvidHttpClientRequestConfig requestConfig) => new CorvidHttpResponse {
+    protected async Task<ICorvidHttpClientRequestResponse> ExecutePostAsync (ICorvidHttpClientRequestConfig requestConfig) => new CorvidHttpClientRequestResponse {
         HttpResponseMessage = await HttpClient.PostAsync (requestConfig.Route, requestConfig.Content, requestConfig.CancellationToken)
     };
     #endregion
 
     #region Put
-    public async Task<ICorvidHttpResponse> PutAsync (ICorvidHttpClientRequestConfig requestConfig) {
+    public async Task<ICorvidHttpClientRequestResponse> PutAsync (ICorvidHttpClientRequestConfig requestConfig) {
         return await ExecuteRequest (requestConfig, ExecutePutAsync);
     }
 
-    protected async Task<ICorvidHttpResponse> ExecutePutAsync (ICorvidHttpClientRequestConfig requestConfig) => new CorvidHttpResponse {
+    protected async Task<ICorvidHttpClientRequestResponse> ExecutePutAsync (ICorvidHttpClientRequestConfig requestConfig) => new CorvidHttpClientRequestResponse {
         HttpResponseMessage = await HttpClient.PutAsync (requestConfig.Route, requestConfig.Content, requestConfig.CancellationToken)
     };
     #endregion
 
     #region Delete
-    public async Task<ICorvidHttpResponse> DeleteAsync (ICorvidHttpClientRequestConfig requestConfig) {
+    public async Task<ICorvidHttpClientRequestResponse> DeleteAsync (ICorvidHttpClientRequestConfig requestConfig) {
         return await ExecuteRequest (requestConfig, ExecuteDeleteAsync);
     }
 
-    protected async Task<ICorvidHttpResponse> ExecuteDeleteAsync (ICorvidHttpClientRequestConfig requestConfig) => new CorvidHttpResponse {
+    protected async Task<ICorvidHttpClientRequestResponse> ExecuteDeleteAsync (ICorvidHttpClientRequestConfig requestConfig) => new CorvidHttpClientRequestResponse {
         HttpResponseMessage = await HttpClient.DeleteAsync (requestConfig.Route, requestConfig.CancellationToken)
     };
     #endregion
 
-    protected async Task<ICorvidHttpResponse> ExecuteRequest (ICorvidHttpClientRequestConfig requestConfig, Func<ICorvidHttpClientRequestConfig, Task<ICorvidHttpResponse>> func) {
+    protected async Task<ICorvidHttpClientRequestResponse> ExecuteRequest (ICorvidHttpClientRequestConfig requestConfig, Func<ICorvidHttpClientRequestConfig, Task<ICorvidHttpClientRequestResponse>> func) {
         if (requestConfig.WithRetry) {
             return await ExecuteRequestWithRateLimitAndRetry (requestConfig, func);
         }
@@ -123,10 +123,10 @@ public class CorvidHttpClientHandler (ICorvidHttpClientHandlerConfig config, Htt
         }
     }
     
-    protected async Task<ICorvidHttpResponse> ExecuteRequestWithRateLimitAndRetry (ICorvidHttpClientRequestConfig requestConfig, Func<ICorvidHttpClientRequestConfig, Task<ICorvidHttpResponse>> func) {
+    protected async Task<ICorvidHttpClientRequestResponse> ExecuteRequestWithRateLimitAndRetry (ICorvidHttpClientRequestConfig requestConfig, Func<ICorvidHttpClientRequestConfig, Task<ICorvidHttpClientRequestResponse>> func) {
         var retryCount = 0;
 
-        ICorvidHttpResponse response;
+        ICorvidHttpClientRequestResponse response;
 
         Func<int, int> delayCalc = requestConfig.UseDefaultRetryDelay 
                                    ? Config.CalculateDelayInMillisecondsForRetryAttempt 
@@ -155,7 +155,7 @@ public class CorvidHttpClientHandler (ICorvidHttpClientHandlerConfig config, Htt
 
     protected bool ShouldRetryRequest (HttpStatusCode code) => Config.NonretryStatusCodes.Contains (code);
 
-    protected async Task<ICorvidHttpResponse> ExecuteRequestWithRateLimit (ICorvidHttpClientRequestConfig requestConfig, Func<ICorvidHttpClientRequestConfig, Task<ICorvidHttpResponse>> func) {
+    protected async Task<ICorvidHttpClientRequestResponse> ExecuteRequestWithRateLimit (ICorvidHttpClientRequestConfig requestConfig, Func<ICorvidHttpClientRequestConfig, Task<ICorvidHttpClientRequestResponse>> func) {
         var delay = Config.RequestDelayInMilliseconds;
 
         delay -= (delay > 0 ? GetMilisecondsSinceLastRequest (requestConfig.CancellationToken) : 0);

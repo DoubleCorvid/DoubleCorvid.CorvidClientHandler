@@ -28,9 +28,9 @@ public interface ICorvidHttpClientHandler {
 
     ICorvidHttpClientHandlerConfig Config { get; }
 
-    Task<ICorvidHttpResponse> GetAsync (ICorvidHttpClientRequestConfig config);
-    Task<ICorvidHttpResponse> PatchAsync (ICorvidHttpClientRequestConfig config);
-    Task<ICorvidHttpResponse> PostAsync (ICorvidHttpClientRequestConfig config);
-    Task<ICorvidHttpResponse> PutAsync (ICorvidHttpClientRequestConfig config);
-    Task<ICorvidHttpResponse> DeleteAsync (ICorvidHttpClientRequestConfig config);
+    Task<ICorvidHttpClientRequestResponse> GetAsync (ICorvidHttpClientRequestConfig config);
+    Task<ICorvidHttpClientRequestResponse> PatchAsync (ICorvidHttpClientRequestConfig config);
+    Task<ICorvidHttpClientRequestResponse> PostAsync (ICorvidHttpClientRequestConfig config);
+    Task<ICorvidHttpClientRequestResponse> PutAsync (ICorvidHttpClientRequestConfig config);
+    Task<ICorvidHttpClientRequestResponse> DeleteAsync (ICorvidHttpClientRequestConfig config);
 }
