@@ -19,6 +19,8 @@
  * IN THE SOFTWARE.
  */
 
+using System.Net;
+
 using DoubleCorvid.CorvidClientHandler.Framework.Config;
 
 namespace DoubleCorvid.CorvidClientHandler.Config;
@@ -26,11 +28,34 @@ namespace DoubleCorvid.CorvidClientHandler.Config;
 public class CorvidHttpClientHandlerConfig : ICorvidHttpClientHandlerConfig {
     public required string Name { get; set; }
 
-    public required HttpClient Client { get; set; }
-
     public bool RateLimitRequests { get; set; } = true;
 
     public int RequestDelayInMilliseconds { get; set; } = 1000;
+
+    public List<HttpStatusCode> NonretryStatusCodes { get; set; } = [
+        HttpStatusCode.MovedPermanently,
+        HttpStatusCode.TemporaryRedirect,
+        HttpStatusCode.SeeOther,
+        HttpStatusCode.NotModified,
+        HttpStatusCode.TemporaryRedirect,
+        HttpStatusCode.PermanentRedirect,
+        HttpStatusCode.BadRequest,
+        HttpStatusCode.Unauthorized,
+        HttpStatusCode.Forbidden,
+        HttpStatusCode.NotFound,
+        HttpStatusCode.MethodNotAllowed,
+        HttpStatusCode.NotAcceptable,
+        HttpStatusCode.Gone,
+        HttpStatusCode.InternalServerError,
+        HttpStatusCode.NotImplemented,
+        HttpStatusCode.BadGateway,
+        HttpStatusCode.ServiceUnavailable,
+        HttpStatusCode.HttpVersionNotSupported,
+        HttpStatusCode.VariantAlsoNegotiates,
+        HttpStatusCode.InsufficientStorage,
+        HttpStatusCode.LoopDetected,
+        HttpStatusCode.NetworkAuthenticationRequired,
+    ];
 
     public int RetryDelayPerAttemptInMilliseconds { get; set; } = 10000;
 

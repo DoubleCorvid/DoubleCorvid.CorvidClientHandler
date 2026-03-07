@@ -30,6 +30,8 @@ public class CorvidHttpClientRequestConfig : ICorvidHttpClientRequestConfig {
 
     public HttpContent Content { get; set; } = default!;
 
+    public bool WithRetry { get; set; } = true;
+
     public bool UseDefaultRetryDelay { get; set; } = true;
 
     public int RetryDelayPerAttemptInMilliseconds { get; set; } = 10000;

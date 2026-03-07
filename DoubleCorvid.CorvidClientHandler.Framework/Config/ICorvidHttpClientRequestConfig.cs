@@ -28,6 +28,8 @@ public interface ICorvidHttpClientRequestConfig {
 
     HttpContent Content { get; }
 
+    bool WithRetry { get; }
+
     bool UseDefaultRetryDelay { get; }
 
     int RetryDelayPerAttemptInMilliseconds { get; }

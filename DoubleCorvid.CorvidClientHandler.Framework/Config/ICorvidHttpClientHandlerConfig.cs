@@ -19,14 +19,16 @@
  * IN THE SOFTWARE.
  */
 
+using System.Net;
+
 namespace DoubleCorvid.CorvidClientHandler.Framework.Config;
 
 public interface ICorvidHttpClientHandlerConfig {
     string Name { get; }
 
-    HttpClient Client { get; }
-
     bool RateLimitRequests { get; }
+    
+    List<HttpStatusCode> NonretryStatusCodes { get; }
 
     int RequestDelayInMilliseconds { get; }
 

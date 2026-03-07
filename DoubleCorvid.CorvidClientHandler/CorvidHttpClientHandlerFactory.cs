@@ -39,6 +39,6 @@ public class CorvidHttpClientHandlerFactory (ICorvidHttpClientHandlerFactoryConf
     protected CorvidHttpClientHandler BuildHandler (string name) {
         var handlerConfig = Config.GetClientConfig (name);
 
-        return new CorvidHttpClientHandler (handlerConfig);
+        return new CorvidHttpClientHandler (handlerConfig, Config.ClientFactory.CreateClient (name));
     }
 }
