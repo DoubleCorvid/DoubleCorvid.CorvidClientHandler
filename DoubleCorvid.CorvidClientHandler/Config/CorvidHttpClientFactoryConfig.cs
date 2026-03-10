@@ -24,9 +24,9 @@ using DoubleCorvid.CorvidClientHandler.Framework.Config;
 namespace DoubleCorvid.CorvidClientHandler.Config;
 
 public class CorvidHttpClientFactoryConfig : ICorvidHttpClientFactoryConfig {
-    public required ICorvidHttpClientConfig DefaultClientConfig { get; set; }
+    public required ICorvidHttpClientConfig DefaultClientConfig { get; init; }
 
-    public IReadOnlyDictionary<string, ICorvidHttpClientConfig> ClientConfigs { get; set; } = new Dictionary<string, ICorvidHttpClientConfig> ();
+    public IReadOnlyDictionary<string, ICorvidHttpClientConfig> ClientConfigs { get; init; } = new Dictionary<string, ICorvidHttpClientConfig> ();
 
     public ICorvidHttpClientConfig GetClientConfig (string name) => ClientConfigs.TryGetValue (name, out ICorvidHttpClientConfig? config) ? config : DefaultClientConfig;
 }

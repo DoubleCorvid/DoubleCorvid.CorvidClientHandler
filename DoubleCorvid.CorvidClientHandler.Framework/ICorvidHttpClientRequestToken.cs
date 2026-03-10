@@ -19,16 +19,28 @@
  * IN THE SOFTWARE.
  */
 
-namespace DoubleCorvid.CorvidClientHandler.Framework.RateLimiting;
+namespace DoubleCorvid.CorvidClientHandler.Framework;
 
-public interface ICorvidHttpClientRateLimiterToken {
-    bool Rejected { get; }
+public interface ICorvidHttpClientRequestToken {
+    bool IsRejected { get; }
 
-    bool Expired { get; }
+    bool IsExpired { get; }
 
-    bool Completed { get; }
+    bool IsCompleted { get; }
 
-    bool Cancelled { get; }
+    bool IsCancelled { get; }
+
+    bool IsSuccess { get; }
+
+    void Reject ();
+
+    void Expire ();
+
+    void Complete ();
 
     void Cancel ();
+
+    ICorvidHttpClientRequestResponse? Response { get; set; }
+
+    Task<ICorvidHttpClientRequestResponse?> WaitForResponseAsync ();
 }

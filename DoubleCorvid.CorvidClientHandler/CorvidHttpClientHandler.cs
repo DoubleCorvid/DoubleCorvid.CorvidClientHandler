@@ -20,9 +20,11 @@
  */
 
 using System.Net;
+using System.Runtime.CompilerServices;
 
 using DoubleCorvid.CorvidClientHandler.Framework;
 using DoubleCorvid.CorvidClientHandler.Framework.Config;
+using DoubleCorvid.CorvidClientHandler.Framework.RateLimiting;
 
 namespace DoubleCorvid.CorvidClientHandler;
 
@@ -30,14 +32,6 @@ public class CorvidHttpClientHandler (ICorvidHttpClientHandlerConfig config, Htt
     public ICorvidHttpClientHandlerConfig Config { get; } = config;
 
     public HttpClient HttpClient { get; } = client;
-
-    protected readonly SemaphoreSlim _timestampSemaphore = new (1);
-
-    protected readonly ReaderWriterLock _timestampLock = new ();
-
-    protected readonly int _timestampLockTimeout = 10;
-
-    protected DateTime _lastRequestTimestamp = DateTime.UtcNow;
 
     protected List<HttpStatusCode> _oneShotStatusCodes = [
         HttpStatusCode.MovedPermanently,
@@ -65,7 +59,7 @@ public class CorvidHttpClientHandler (ICorvidHttpClientHandlerConfig config, Htt
     ];
 
     #region Get
-    public async Task<ICorvidHttpClientRequestResponse> GetAsync (ICorvidHttpClientRequestConfig requestConfig) {
+    public async Task<ICorvidHttpClientRequestToken?> GetAsync (ICorvidHttpClientRequestConfig requestConfig) {
         return await ExecuteRequest (requestConfig, ExecuteGetAsync);
     }
 
@@ -75,7 +69,7 @@ public class CorvidHttpClientHandler (ICorvidHttpClientHandlerConfig config, Htt
     #endregion
 
     #region Patch
-    public async Task<ICorvidHttpClientRequestResponse> PatchAsync (ICorvidHttpClientRequestConfig requestConfig) {
+    public async Task<ICorvidHttpClientRequestToken?> PatchAsync (ICorvidHttpClientRequestConfig requestConfig) {
         return await ExecuteRequest (requestConfig, ExecutePatchAsync);
     }
 
@@ -85,7 +79,7 @@ public class CorvidHttpClientHandler (ICorvidHttpClientHandlerConfig config, Htt
     #endregion
 
     #region Post
-    public async Task<ICorvidHttpClientRequestResponse> PostAsync (ICorvidHttpClientRequestConfig requestConfig) {
+    public async Task<ICorvidHttpClientRequestToken?> PostAsync (ICorvidHttpClientRequestConfig requestConfig) {
         return await ExecuteRequest (requestConfig, ExecutePostAsync);
     }
 
@@ -95,7 +89,7 @@ public class CorvidHttpClientHandler (ICorvidHttpClientHandlerConfig config, Htt
     #endregion
 
     #region Put
-    public async Task<ICorvidHttpClientRequestResponse> PutAsync (ICorvidHttpClientRequestConfig requestConfig) {
+    public async Task<ICorvidHttpClientRequestToken?> PutAsync (ICorvidHttpClientRequestConfig requestConfig) {
         return await ExecuteRequest (requestConfig, ExecutePutAsync);
     }
 
@@ -105,7 +99,7 @@ public class CorvidHttpClientHandler (ICorvidHttpClientHandlerConfig config, Htt
     #endregion
 
     #region Delete
-    public async Task<ICorvidHttpClientRequestResponse> DeleteAsync (ICorvidHttpClientRequestConfig requestConfig) {
+    public async Task<ICorvidHttpClientRequestToken?> DeleteAsync (ICorvidHttpClientRequestConfig requestConfig) {
         return await ExecuteRequest (requestConfig, ExecuteDeleteAsync);
     }
 
@@ -114,7 +108,7 @@ public class CorvidHttpClientHandler (ICorvidHttpClientHandlerConfig config, Htt
     };
     #endregion
 
-    protected async Task<ICorvidHttpClientRequestResponse> ExecuteRequest (ICorvidHttpClientRequestConfig requestConfig, Func<ICorvidHttpClientRequestConfig, Task<ICorvidHttpClientRequestResponse>> func) {
+    protected async Task<ICorvidHttpClientRequestToken> ExecuteRequest (ICorvidHttpClientRequestConfig requestConfig, Func<ICorvidHttpClientRequestConfig, Task<ICorvidHttpClientRequestResponse>> func) {
         if (requestConfig.WithRetry) {
             return await ExecuteRequestWithRateLimitAndRetry (requestConfig, func);
         }
@@ -123,10 +117,10 @@ public class CorvidHttpClientHandler (ICorvidHttpClientHandlerConfig config, Htt
         }
     }
     
-    protected async Task<ICorvidHttpClientRequestResponse> ExecuteRequestWithRateLimitAndRetry (ICorvidHttpClientRequestConfig requestConfig, Func<ICorvidHttpClientRequestConfig, Task<ICorvidHttpClientRequestResponse>> func) {
+    protected async Task<ICorvidHttpClientRequestToken> ExecuteRequestWithRateLimitAndRetry (ICorvidHttpClientRequestConfig requestConfig, Func<ICorvidHttpClientRequestConfig, Task<ICorvidHttpClientRequestResponse>> func) {
         var retryCount = 0;
 
-        ICorvidHttpClientRequestResponse response;
+        ICorvidHttpClientRequestToken token;
 
         Func<int, int> delayCalc = requestConfig.UseDefaultRetryDelay 
                                    ? Config.CalculateDelayInMillisecondsForRetryAttempt 
@@ -135,61 +129,31 @@ public class CorvidHttpClientHandler (ICorvidHttpClientHandlerConfig config, Htt
         int delay = -1;
 
         do {
-            response = await ExecuteRequestWithRateLimit (requestConfig, func);
+            token = await ExecuteRequestWithRateLimit (requestConfig, func);
 
-            if (!response.HttpResponseMessage.IsSuccessStatusCode 
-                && ShouldRetryRequest (response.HttpResponseMessage.StatusCode)) {
-                
-                delay = delayCalc (retryCount);
-
-                retryCount++;
-
-                if (delay > 0) {
-                    await Task.Delay (delay, requestConfig.CancellationToken);
-                }
+            if (requestConfig.CancellationToken.IsCancellationRequested) {
+                return token;
             }
-        } while (!response.HttpResponseMessage.IsSuccessStatusCode && delay > 0);
 
-        return response;
+            await token.WaitForResponseAsync ();
+
+            if (token.IsSuccess) {
+                delay = -1;
+            }
+            else if (requestConfig.UseDefaultRetryDelay) {
+                delay = Config.CalculateDelayInMillisecondsForRetryAttempt (retryCount++);
+            }
+            else {
+                delay = requestConfig.CalculateDelayInMillisecondsForRetryAttempt (retryCount++);
+            }
+        } while (delay > 0 && !requestConfig.CancellationToken.IsCancellationRequested);
+
+        return token;
     }
 
     protected bool ShouldRetryRequest (HttpStatusCode code) => Config.NonretryStatusCodes.Contains (code);
 
-    protected async Task<ICorvidHttpClientRequestResponse> ExecuteRequestWithRateLimit (ICorvidHttpClientRequestConfig requestConfig, Func<ICorvidHttpClientRequestConfig, Task<ICorvidHttpClientRequestResponse>> func) {
-        var delay = Config.RequestDelayInMilliseconds;
-
-        delay -= (delay > 0 ? GetMilisecondsSinceLastRequest (requestConfig.CancellationToken) : 0);
-
-        if (delay > 0) {
-            await Task.Delay (delay, requestConfig.CancellationToken);
-        }
-
-
-        var response = await func (requestConfig);
-
-        await UpdateLastRequestTimeStamp (requestConfig.CancellationToken);
-
-        return response;
-    }
-
-    private async Task UpdateLastRequestTimeStamp (CancellationToken token) {
-        await _timestampSemaphore.WaitAsync (token);
-
-        _lastRequestTimestamp = DateTime.UtcNow;
-
-        _timestampSemaphore.Release ();
-    }
-
-
-    protected int GetMilisecondsSinceLastRequest (CancellationToken token) {
-        _timestampSemaphore.Wait (token);
-
-        var lastRequestTimestamp = _lastRequestTimestamp;
-
-        _timestampSemaphore.Release ();
-
-        var span = DateTime.UtcNow - lastRequestTimestamp;
-
-        return span.Milliseconds;
+    protected async Task<ICorvidHttpClientRequestToken> ExecuteRequestWithRateLimit (ICorvidHttpClientRequestConfig requestConfig, Func<ICorvidHttpClientRequestConfig, Task<ICorvidHttpClientRequestResponse>> func) {
+        return Config.RateLimiter.EnqueueRequest (requestConfig, func);
     }
 }

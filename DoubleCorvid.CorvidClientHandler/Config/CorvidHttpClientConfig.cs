@@ -24,13 +24,13 @@ using DoubleCorvid.CorvidClientHandler.Framework.Config;
 namespace DoubleCorvid.CorvidClientHandler.Config;
 
 public class CorvidHttpClientConfig : ICorvidHttpClientConfig {
-    public required string Name { get; set; }
+    public required string Name { get; init; }
 
-    public required string BaseUrl { get; set; }
+    public required string BaseUrl { get; init; }
 
-    public required string UserAgent { get; set; }
+    public required string UserAgent { get; init; }
 
-    public required IDictionary<string, string> DefaultRequestHeaders { get; set; }
+    public required IDictionary<string, string> DefaultRequestHeaders { get; init; }
 
-    public required IList<string> AcceptedMediaTypes { get; set; }
+    public required IList<string> AcceptedMediaTypes { get; init; }
 }

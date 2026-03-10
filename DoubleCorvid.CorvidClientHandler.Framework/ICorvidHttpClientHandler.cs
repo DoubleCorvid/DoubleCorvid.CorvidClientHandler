@@ -20,6 +20,7 @@
  */
 
 using DoubleCorvid.CorvidClientHandler.Framework.Config;
+using DoubleCorvid.CorvidClientHandler.Framework.RateLimiting;
 
 namespace DoubleCorvid.CorvidClientHandler.Framework;
 
@@ -28,9 +29,9 @@ public interface ICorvidHttpClientHandler {
 
     ICorvidHttpClientHandlerConfig Config { get; }
 
-    Task<ICorvidHttpClientRequestResponse> GetAsync (ICorvidHttpClientRequestConfig config);
-    Task<ICorvidHttpClientRequestResponse> PatchAsync (ICorvidHttpClientRequestConfig config);
-    Task<ICorvidHttpClientRequestResponse> PostAsync (ICorvidHttpClientRequestConfig config);
-    Task<ICorvidHttpClientRequestResponse> PutAsync (ICorvidHttpClientRequestConfig config);
-    Task<ICorvidHttpClientRequestResponse> DeleteAsync (ICorvidHttpClientRequestConfig config);
+    Task<ICorvidHttpClientRequestToken?> GetAsync (ICorvidHttpClientRequestConfig config);
+    Task<ICorvidHttpClientRequestToken?> PatchAsync (ICorvidHttpClientRequestConfig config);
+    Task<ICorvidHttpClientRequestToken?> PostAsync (ICorvidHttpClientRequestConfig config);
+    Task<ICorvidHttpClientRequestToken?> PutAsync (ICorvidHttpClientRequestConfig config);
+    Task<ICorvidHttpClientRequestToken?> DeleteAsync (ICorvidHttpClientRequestConfig config);
 }

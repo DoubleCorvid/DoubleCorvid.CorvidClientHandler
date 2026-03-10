@@ -19,12 +19,15 @@
  * IN THE SOFTWARE.
  */
 
+using DoubleCorvid.CorvidClientHandler.Framework.Config;
+
 namespace DoubleCorvid.CorvidClientHandler.Framework.RateLimiting;
 
 public interface ICorvidHttpClientRateLimiter {
-    Task StartProcessingRequestsAsync ();
+    Task StartAsync (CancellationToken cancellationToken);
 
-    Task StopProcessingRequestsAsync ();
+    void Stop ();
 
-    ICorvidHttpClientRateLimiterToken QueueRequest (ICorvidHttpClientRateLimiterEntry rateLimitEntry);
+    ICorvidHttpClientRequestToken EnqueueRequest (ICorvidHttpClientRequestConfig requestConfig, 
+                                                      Func<ICorvidHttpClientRequestConfig, Task<ICorvidHttpClientRequestResponse>> requester);
 }

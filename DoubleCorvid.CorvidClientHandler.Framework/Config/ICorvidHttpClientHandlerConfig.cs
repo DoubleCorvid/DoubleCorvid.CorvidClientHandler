@@ -20,6 +20,7 @@
  */
 
 using System.Net;
+using DoubleCorvid.CorvidClientHandler.Framework.RateLimiting;
 
 namespace DoubleCorvid.CorvidClientHandler.Framework.Config;
 
@@ -27,12 +28,10 @@ public interface ICorvidHttpClientHandlerConfig {
     string Name { get; }
 
     bool RateLimitRequests { get; }
-    
+
+    ICorvidHttpClientRateLimiter RateLimiter { get; }
+
     List<HttpStatusCode> NonretryStatusCodes { get; }
-
-    int RequestDelayInMilliseconds { get; }
-
-    int RetryDelayPerAttemptInMilliseconds { get; }
 
     int MaxRetryAttempts { get; }
 

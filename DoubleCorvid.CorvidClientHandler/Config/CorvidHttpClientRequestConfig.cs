@@ -19,24 +19,27 @@
  * IN THE SOFTWARE.
  */
 
+using DoubleCorvid.CorvidClientHandler.Framework;
 using DoubleCorvid.CorvidClientHandler.Framework.Config;
 
 namespace DoubleCorvid.CorvidClientHandler.Config;
 
 public class CorvidHttpClientRequestConfig : ICorvidHttpClientRequestConfig {
-    public required string Route { get; set; }
+    public required string Route { get; init; }
 
-    public required HttpCompletionOption HttpCompletionOption { get; set; }
+    public required HttpCompletionOption HttpCompletionOption { get; init; }
 
-    public HttpContent Content { get; set; } = default!;
+    public HttpContent Content { get; init; } = default!;
 
-    public bool WithRetry { get; set; } = true;
+    public bool WithRetry { get; init; } = true;
 
-    public bool UseDefaultRetryDelay { get; set; } = true;
+    public bool UseDefaultRetryDelay { get; init; } = true;
 
-    public int RetryDelayPerAttemptInMilliseconds { get; set; } = 10000;
+    public int RetryDelayPerAttemptInMilliseconds { get; init; } = 10000;
 
-    public int MaxRetryAttempts { get; set; }  = 5;
+    public int MaxRetryAttempts { get; init; }  = 5;
+
+    public required CancellationToken CancellationToken { get; init; }
 
     public int CalculateDelayInMillisecondsForRetryAttempt (int attempt) {
         if (attempt > MaxRetryAttempts) {
@@ -45,6 +48,4 @@ public class CorvidHttpClientRequestConfig : ICorvidHttpClientRequestConfig {
 
         return RetryDelayPerAttemptInMilliseconds * (int) MathF.Pow (2, attempt - 1);
     }
-
-    public required CancellationToken CancellationToken { get; set; }
 }

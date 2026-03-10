@@ -1,4 +1,4 @@
-﻿/* Copyright © 2025 Raven Crowe
+/* Copyright © 2025 Raven Crowe
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to
@@ -19,17 +19,8 @@
  * IN THE SOFTWARE.
  */
 
-using DoubleCorvid.CorvidClientHandler.Framework.Builders;
-using DoubleCorvid.CorvidClientHandler.Framework.Config;
+namespace DoubleCorvid.CorvidClientHandler.Framework.Config;
 
-namespace DoubleCorvid.CorvidClientHandler.Config;
-
-public class CorvidHttpClientHandlerFactoryConfig : ICorvidHttpClientHandlerFactoryConfig {
-    public required IHttpClientFactory ClientFactory { get; init; }
-
-    public required ICorvidHttpClientHandlerConfig DefaultHandlerConfig { get; init; }
-
-    public IReadOnlyDictionary<string, ICorvidHttpClientHandlerConfig> HandlerConfigs { get; init; } = new Dictionary <string, ICorvidHttpClientHandlerConfig>();
-
-    public ICorvidHttpClientHandlerConfig GetClientConfig (string name) => HandlerConfigs.TryGetValue (name, out ICorvidHttpClientHandlerConfig? config) ? config : DefaultHandlerConfig;
+public interface ICorvidHttpClientRateLimiterConfig {
+    int RateLimitDelay { get; }
 }

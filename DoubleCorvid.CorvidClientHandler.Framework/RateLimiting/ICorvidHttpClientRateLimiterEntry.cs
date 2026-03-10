@@ -26,7 +26,7 @@ namespace DoubleCorvid.CorvidClientHandler.Framework.RateLimiting;
 public interface ICorvidHttpClientRateLimiterEntry {
     ICorvidHttpClientRequestConfig RequestConfig { get; }
 
-    Func<ICorvidHttpClientRequestConfig, ICorvidHttpClientRequestResponse> Requester { get; }
+    Func<ICorvidHttpClientRequestConfig, Task<ICorvidHttpClientRequestResponse>> Requester { get; }
 
-    Action<ICorvidHttpClientRequestResponse> Callback { get; }
+    ICorvidHttpClientRequestToken Token { get; }
 }

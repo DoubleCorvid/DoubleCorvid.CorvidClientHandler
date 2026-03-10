@@ -22,17 +22,18 @@
 using System.Net;
 
 using DoubleCorvid.CorvidClientHandler.Framework.Config;
+using DoubleCorvid.CorvidClientHandler.Framework.RateLimiting;
 
 namespace DoubleCorvid.CorvidClientHandler.Config;
 
 public class CorvidHttpClientHandlerConfig : ICorvidHttpClientHandlerConfig {
-    public required string Name { get; set; }
+    public required string Name { get; init; }
 
-    public bool RateLimitRequests { get; set; } = true;
+    public bool RateLimitRequests { get; init; } = false;
 
-    public int RequestDelayInMilliseconds { get; set; } = 1000;
+    public required ICorvidHttpClientRateLimiter RateLimiter { get; init; }
 
-    public List<HttpStatusCode> NonretryStatusCodes { get; set; } = [
+    public List<HttpStatusCode> NonretryStatusCodes { get; init; } = [
         HttpStatusCode.MovedPermanently,
         HttpStatusCode.TemporaryRedirect,
         HttpStatusCode.SeeOther,
@@ -57,15 +58,15 @@ public class CorvidHttpClientHandlerConfig : ICorvidHttpClientHandlerConfig {
         HttpStatusCode.NetworkAuthenticationRequired,
     ];
 
-    public int RetryDelayPerAttemptInMilliseconds { get; set; } = 10000;
-
-    public int MaxRetryAttempts { get; set; }  = 5;
+    public int MaxRetryAttempts { get; init; } = 4;
 
     public int CalculateDelayInMillisecondsForRetryAttempt (int attempt) {
         if (attempt > MaxRetryAttempts) {
             return -1;
         }
 
-        return RetryDelayPerAttemptInMilliseconds * (int) MathF.Pow (2, attempt - 1);
+        int jitter = DateTime.UtcNow.Millisecond % (int) MathF.Pow (2, attempt - 1);
+
+        return (int) MathF.Pow (2, attempt - 1) + jitter;
     }
 }
