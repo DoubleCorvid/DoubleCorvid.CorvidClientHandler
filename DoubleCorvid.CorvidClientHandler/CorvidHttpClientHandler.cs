@@ -113,7 +113,7 @@ public class CorvidHttpClientHandler (ICorvidHttpClientHandlerConfig config, Htt
             return await ExecuteRequestWithRateLimitAndRetry (requestConfig, func);
         }
         else {
-            return await ExecuteRequestWithRateLimit (requestConfig, func);
+            return ExecuteRequestWithRateLimit (requestConfig, func);
         }
     }
     
@@ -129,7 +129,7 @@ public class CorvidHttpClientHandler (ICorvidHttpClientHandlerConfig config, Htt
         int delay = -1;
 
         do {
-            token = await ExecuteRequestWithRateLimit (requestConfig, func);
+            token = ExecuteRequestWithRateLimit (requestConfig, func);
 
             if (requestConfig.CancellationToken.IsCancellationRequested) {
                 return token;
@@ -153,7 +153,7 @@ public class CorvidHttpClientHandler (ICorvidHttpClientHandlerConfig config, Htt
 
     protected bool ShouldRetryRequest (HttpStatusCode code) => Config.NonretryStatusCodes.Contains (code);
 
-    protected async Task<ICorvidHttpClientRequestToken> ExecuteRequestWithRateLimit (ICorvidHttpClientRequestConfig requestConfig, Func<ICorvidHttpClientRequestConfig, Task<ICorvidHttpClientRequestResponse>> func) {
+    protected ICorvidHttpClientRequestToken ExecuteRequestWithRateLimit (ICorvidHttpClientRequestConfig requestConfig, Func<ICorvidHttpClientRequestConfig, Task<ICorvidHttpClientRequestResponse>> func) {
         return Config.RateLimiter.EnqueueRequest (requestConfig, func);
     }
 }
