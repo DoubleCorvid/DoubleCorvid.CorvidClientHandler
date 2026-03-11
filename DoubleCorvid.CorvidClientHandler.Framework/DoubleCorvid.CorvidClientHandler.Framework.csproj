@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Title>DoubleCorvid's HttpClientHandler Framework</Title>
-    <Version>0.16.0-ALPHA</Version>
+    <Version>0.17.0-ALPHA</Version>
     <Authors>DoubleCorvid</Authors>
     <Company />
     <Description>A default handler framework for .Net's HttpClient.</Description>
