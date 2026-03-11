@@ -23,6 +23,6 @@ using DoubleCorvid.CorvidClientHandler.Framework.Config;
 
 namespace DoubleCorvid.CorvidClientHandler.Config;
 
-public class CorivdHttpClientRateLimiterConfig : ICorvidHttpClientRateLimiterConfig {
+public class CorvidHttpClientRateLimiterConfig : ICorvidHttpClientRateLimiterConfig {
     public int RateLimitDelay { get; init; } = 100;
 }

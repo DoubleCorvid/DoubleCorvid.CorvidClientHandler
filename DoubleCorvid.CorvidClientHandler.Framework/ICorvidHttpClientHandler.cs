@@ -20,7 +20,6 @@
  */
 
 using DoubleCorvid.CorvidClientHandler.Framework.Config;
-using DoubleCorvid.CorvidClientHandler.Framework.RateLimiting;
 
 namespace DoubleCorvid.CorvidClientHandler.Framework;
 
