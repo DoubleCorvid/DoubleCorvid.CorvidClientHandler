@@ -33,10 +33,10 @@ public class CorvidHttpClientHandlerFactory (ICorvidHttpClientHandlerFactoryConf
     public IReadOnlyDictionary<string, ICorvidHttpClientHandler> CreatedHandlers => _handlers;
 
     public virtual ICorvidHttpClientHandler CreateHandler (string name) {
-        return _handlers.GetOrAdd (name, n => BuildHandler (name));
+        return _handlers.GetOrAdd (name, n => BuildHandler (n));
     }
 
-    protected CorvidHttpClientHandler BuildHandler (string name) {
+    private CorvidHttpClientHandler BuildHandler (string name) {
         var handlerConfig = Config.GetClientConfig (name);
 
         return new CorvidHttpClientHandler (handlerConfig, Config.ClientFactory.CreateClient (name));
