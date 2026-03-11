@@ -135,7 +135,7 @@ public class CorvidHttpClientHandler (ICorvidHttpClientHandlerConfig config, Htt
                 return token;
             }
 
-            await token.WaitForResponseAsync ();
+            await token.WaitUntilCompleteAsync ();
 
             if (token.IsSuccess) {
                 delay = -1;

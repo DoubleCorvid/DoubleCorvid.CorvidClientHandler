@@ -42,5 +42,5 @@ public interface ICorvidHttpClientRequestToken {
 
     ICorvidHttpClientRequestResponse? Response { get; set; }
 
-    Task<ICorvidHttpClientRequestResponse?> WaitForResponseAsync ();
+    Task<ICorvidHttpClientRequestResponse?> WaitUntilCompleteAsync ();
 }

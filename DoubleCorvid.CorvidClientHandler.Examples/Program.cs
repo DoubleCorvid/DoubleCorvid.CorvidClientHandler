@@ -77,7 +77,7 @@ public class Program {
             return;
         }
 
-        var response = await token.WaitForResponseAsync ();
+        var response = await token.WaitUntilCompleteAsync ();
 
         if (token.IsSuccess && (response?.HttpResponseMessage.IsSuccessStatusCode ?? false)) {
             var str = await response.HttpResponseMessage.Content.ReadAsStringAsync ();
@@ -106,7 +106,7 @@ public class Program {
             return;
         }
 
-        var response = await token.WaitForResponseAsync ();
+        var response = await token.WaitUntilCompleteAsync ();
 
         if (token.IsSuccess && (response?.HttpResponseMessage.IsSuccessStatusCode ?? false)) {
             var str = await response.HttpResponseMessage.Content.ReadAsStringAsync ();
@@ -137,7 +137,7 @@ public class Program {
             return;
         }
 
-        var response = await token.WaitForResponseAsync ();
+        var response = await token.WaitUntilCompleteAsync ();
 
         if (token.IsSuccess && (response?.HttpResponseMessage.IsSuccessStatusCode ?? false)) {
             var str = await response.HttpResponseMessage.Content.ReadAsStringAsync ();
@@ -169,7 +169,7 @@ public class Program {
             return;
         }
 
-        var response = await token.WaitForResponseAsync ();
+        var response = await token.WaitUntilCompleteAsync ();
 
         if (token.IsSuccess && (response?.HttpResponseMessage.IsSuccessStatusCode ?? false)){
             var str = await response.HttpResponseMessage.Content.ReadAsStringAsync ();
@@ -195,7 +195,7 @@ public class Program {
             return;
         }
 
-        var response = await token.WaitForResponseAsync ();
+        var response = await token.WaitUntilCompleteAsync ();
 
         if (token.IsSuccess && (response?.HttpResponseMessage.IsSuccessStatusCode ?? false)) {
             Console.WriteLine ($"Delete example succeded. (It's hard to display an object that doesn't exist :) )");

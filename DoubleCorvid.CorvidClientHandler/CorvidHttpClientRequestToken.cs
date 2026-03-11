@@ -62,5 +62,5 @@ public class CorvidHttpClientRequestToken : ICorvidHttpClientRequestToken {
 
     public ICorvidHttpClientRequestResponse? Response { get; set; }
 
-    public Task<ICorvidHttpClientRequestResponse?> WaitForResponseAsync () => taskCompletionSource.Task;
+    public Task<ICorvidHttpClientRequestResponse?> WaitUntilCompleteAsync () => taskCompletionSource.Task;
 }
