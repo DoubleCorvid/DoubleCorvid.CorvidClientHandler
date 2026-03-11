@@ -24,7 +24,7 @@ using DoubleCorvid.CorvidClientHandler.Framework.Config;
 namespace DoubleCorvid.CorvidClientHandler.Framework.RateLimiting;
 
 public interface ICorvidHttpClientRateLimiter {
-    Task StartAsync (CancellationToken cancellationToken);
+    Task RunAsync (CancellationToken cancellationToken);
 
     void Stop ();
 

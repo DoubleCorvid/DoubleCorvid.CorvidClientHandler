@@ -1,10 +1,29 @@
-﻿
-using System.Text.Json;
+﻿/* Copyright © 2025 Raven Crowe
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to
+ * deal in the Software without restriction, including without limitation the
+ * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+ * sell copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+ * IN THE SOFTWARE.
+ */
 
+using System.Text.Json;
 using DoubleCorvid.CorvidClientHandler.Builders;
 using DoubleCorvid.CorvidClientHandler.Config;
 using DoubleCorvid.CorvidClientHandler.Framework;
-using DoubleCorvid.CorvidClientHandler.Framework.Config;
+using DoubleCorvid.CorvidClientHandler.Framework.RateLimiting;
 using DoubleCorvid.CorvidClientHandler.RateLimiting;
 
 namespace DoubleCorvid.CorvidClientHandler.Examples;
@@ -21,10 +40,13 @@ public class Program {
     }
 
     private static async Task ExecuteJsonPlaceholderExamples () {
-        var ratelimiter = new CorvidHttpClientRateLimiter (new ());
-        var handlerFactory = BuildHandlerFactory ();
+        var ratelimiter = new CorvidHttpClientRateLimiter (new CorvidHttpClientRateLimiterConfig ());
+
+        var handlerFactory = BuildHandlerFactory (ratelimiter);
 
         var client = handlerFactory.CreateHandler (_clientName);
+
+        _ = ratelimiter.RunAsync (_cancelToken);
 
         await ExecuteGetExampleAsync (client);
 
@@ -35,6 +57,10 @@ public class Program {
         await ExecutePutExampleAsync (client);
 
         await ExecuteDeleteExampleAsync (client);
+
+        ratelimiter.Stop ();
+
+        _cancellationTokenSource.Cancel ();
     }
 
     private static async Task ExecuteGetExampleAsync (ICorvidHttpClientHandler client) {
@@ -195,13 +221,13 @@ public class Program {
         return builder.BuildClientFactory ();
     }
 
-    private static ICorvidHttpClientHandlerFactory BuildHandlerFactory () {
+    private static ICorvidHttpClientHandlerFactory BuildHandlerFactory (ICorvidHttpClientRateLimiter ratelimiter) {
         var builder = new CorvidHttpClientHandlerFactoryBuilder {
             HttpClientHandlerFactoryConfig = new CorvidHttpClientHandlerFactoryConfig {
                 ClientFactory = BuildHttpClientFactory (),
                 DefaultHandlerConfig = new CorvidHttpClientHandlerConfig {
                     Name = _clientName,
-                    RateLimiter = new CorvidHttpClientRateLimiter (new CorvidHttpClientRateLimiterConfig ())
+                    RateLimiter = ratelimiter
                 }
             }
         };

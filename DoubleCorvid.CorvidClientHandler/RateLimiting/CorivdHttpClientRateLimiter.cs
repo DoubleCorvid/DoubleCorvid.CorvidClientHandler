@@ -41,17 +41,19 @@ public class CorvidHttpClientRateLimiter (ICorvidHttpClientRateLimiterConfig con
 
     protected DateTime _lastRequestTimestamp = DateTime.UtcNow;
 
-    public async Task StartAsync (CancellationToken cancellationToken) {
-        _processing = true;
+    public Task RunAsync (CancellationToken cancellationToken) {
+        return Task.Run (async () =>{
+            _processing = true;
 
-        while (_processing && !cancellationToken.IsCancellationRequested) {
-            if (!_entries.IsEmpty
-               && _entries.TryDequeue (out var entry)
-               && entry is not null
-               && !entry.Token.IsCancelled) {
-                await ProcessEntry (entry);
+            while (_processing && !cancellationToken.IsCancellationRequested) {
+                if (!_entries.IsEmpty
+                && _entries.TryDequeue (out var entry)
+                && entry is not null
+                && !entry.Token.IsCancelled) {
+                    await ProcessEntry (entry);
+                }
             }
-        }
+        }, cancellationToken);
     }
 
     private async Task ProcessEntry (ICorvidHttpClientRateLimiterEntry entry) {
