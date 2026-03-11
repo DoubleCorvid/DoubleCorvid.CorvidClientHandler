@@ -22,21 +22,50 @@
 namespace DoubleCorvid.CorvidClientHandler.Framework.Config;
 
 public interface ICorvidHttpClientRequestConfig {
+    /// <summary>
+    /// This request's relative route.
+    /// </summary>
     string Route { get; }
 
+    /// <summary>
+    /// This requests `HttpCompleteionOption`.
+    /// </summary>
     HttpCompletionOption HttpCompletionOption { get; }
 
+    /// <summary>
+    /// The content to be sent with this request.
+    /// </summary>
     HttpContent Content { get; }
 
+    /// <summary>
+    /// TShould this request be retries?
+    /// </summary>
     bool WithRetry { get; }
 
+    /// <summary>
+    /// Should this request use the default retry parameters?
+    /// </summary>
     bool UseDefaultRetryDelay { get; }
 
+    /// <summary>
+    /// The delay between each retry request in milliseconds.
+    /// </summary>
     int RetryDelayPerAttemptInMilliseconds { get; }
 
+    /// <summary>
+    /// The max amount of retries for this request.
+    /// </summary>
     int MaxRetryAttempts { get; }
 
-    int CalculateDelayInMillisecondsForRetryAttempt (int attempt);
-
+    /// <summary>
+    /// This request's cancellation token.
+    /// </summary>
     CancellationToken CancellationToken { get; }
+
+    /// <summary>
+    /// Calculate the delay for attempt number `attempt` in milliseconds.
+    /// </summary>
+    /// <param name="attempt">Which attempt to calculate for, starting at 1.</param>
+    /// <returns>How long to to elay for in milliseconds.</returns>
+    int CalculateDelayInMillisecondsForRetryAttempt (int attempt);
 }

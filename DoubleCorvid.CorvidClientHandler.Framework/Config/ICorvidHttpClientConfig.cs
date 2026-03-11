@@ -22,13 +22,28 @@
 namespace DoubleCorvid.CorvidClientHandler.Framework.Config;
 
 public interface ICorvidHttpClientConfig {
+    /// <summary>
+    /// The name of this client.
+    /// </summary>
     string Name { get; }
 
+    /// <summary>
+    /// The base URL for this client.
+    /// </summary>
     string BaseUrl { get; }
 
-    string? UserAgent { get; }
+    /// <summary>
+    /// The user agent for this client.
+    /// </summary>
+    string UserAgent { get; }
 
+    /// <summary>
+    /// This client's default request headers.
+    /// </summary>
     IDictionary<string, string> DefaultRequestHeaders { get; }
 
+    /// <summary>
+    /// The media types this client will accept.
+    /// </summary>
     IList<string> AcceptedMediaTypes { get; }
 }

@@ -24,10 +24,24 @@ using DoubleCorvid.CorvidClientHandler.Framework.Config;
 namespace DoubleCorvid.CorvidClientHandler.Framework.RateLimiting;
 
 public interface ICorvidHttpClientRateLimiter {
+    /// <summary>
+    /// Start running the state machine.
+    /// </summary>
+    /// <param name="cancellationToken">The cancellation token used to cancel processing.</param>
+    /// <returns>A task that can be awaited</returns>
     Task RunAsync (CancellationToken cancellationToken);
 
+    /// <summary>
+    /// Stop the machine.
+    /// </summary>
     void Stop ();
 
+    /// <summary>
+    /// Enqueue a request.
+    /// </summary>
+    /// <param name="requestConfig">The request's configuration.</param>
+    /// <param name="requester">The function that executes the request.</param>
+    /// <returns>A token associated with this request.</returns>
     ICorvidHttpClientRequestToken EnqueueRequest (ICorvidHttpClientRequestConfig requestConfig, 
                                                       Func<ICorvidHttpClientRequestConfig, Task<ICorvidHttpClientRequestResponse>> requester);
 }

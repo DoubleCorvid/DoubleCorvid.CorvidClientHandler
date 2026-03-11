@@ -19,16 +19,28 @@
  * IN THE SOFTWARE.
  */
 
-using DoubleCorvid.CorvidClientHandler.Framework.Builders;
-
 namespace DoubleCorvid.CorvidClientHandler.Framework.Config;
 
 public interface ICorvidHttpClientHandlerFactoryConfig {
+    /// <summary>
+    /// The client factory this handler factory will use to build clients.
+    /// </summary>
     IHttpClientFactory ClientFactory { get; }
     
+    /// <summary>
+    /// The deafult handler config to use if one is not found for a particular name.
+    /// </summary>
     ICorvidHttpClientHandlerConfig DefaultHandlerConfig { get; }
 
+    /// <summary>
+    /// A dictionary of handler configs, using the names as keys.
+    /// </summary>
     IReadOnlyDictionary<string, ICorvidHttpClientHandlerConfig> HandlerConfigs { get; }
 
-    ICorvidHttpClientHandlerConfig GetClientConfig (string name);
+    /// <summary>
+    /// Get the config for handler `name`.
+    /// </summary>
+    /// <param name="name">The name of the handler to find a config for.</param>
+    /// <returns>A config for handler `name`.</returns>
+    ICorvidHttpClientHandlerConfig GetClientHandlerConfig (string name);
 }

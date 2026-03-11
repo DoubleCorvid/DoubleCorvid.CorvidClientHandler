@@ -24,7 +24,15 @@ using DoubleCorvid.CorvidClientHandler.Framework.Config;
 namespace DoubleCorvid.CorvidClientHandler.Framework;
 
 public interface ICorvidHttpClientHandlerFactory {
+    /// <summary>
+    /// This factory's configuration.
+    /// </summary>
     ICorvidHttpClientHandlerFactoryConfig Config { get; }
 
+    /// <summary>
+    /// Create a new handler with the given name.
+    /// </summary>
+    /// <param name="name">What to call this handler.</param>
+    /// <returns>An instance of <see cref="ICorvidHttpClientHandler"/>.</returns>
     ICorvidHttpClientHandler CreateHandler (string name);
 }

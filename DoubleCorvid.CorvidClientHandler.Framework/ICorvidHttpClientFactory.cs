@@ -24,9 +24,20 @@ using DoubleCorvid.CorvidClientHandler.Framework.Config;
 namespace DoubleCorvid.CorvidClientHandler.Framework;
 
 public interface ICorvidHttpClientFactory : IHttpClientFactory, IDisposable {
+    /// <summary>
+    /// This factory's configuration.
+    /// </summary>
     ICorvidHttpClientFactoryConfig Config { get; }
 
+    /// <summary>
+    /// The clients created and managed by this factory.
+    /// </summary>
     IReadOnlyDictionary<string, HttpClient> CreatedClients { get; }
 
+    /// <summary>
+    /// Remove a client from this factory.
+    /// </summary>
+    /// <param name="name">The name of the client to remove.</param>
+    /// <returns>`true` if the client was found and removed, `false` otherwise.</returns>
     bool RemoveClient (string name);
 }

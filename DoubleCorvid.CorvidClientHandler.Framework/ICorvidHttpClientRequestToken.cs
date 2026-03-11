@@ -22,25 +22,59 @@
 namespace DoubleCorvid.CorvidClientHandler.Framework;
 
 public interface ICorvidHttpClientRequestToken {
+    /// <summary>
+    /// Was the request rejected?
+    /// </summary>
     bool IsRejected { get; }
 
+    /// <summary>
+    /// Was the request rejected?
+    /// </summary>
     bool IsExpired { get; }
 
+    /// <summary>
+    /// Was the request completed?
+    /// </summary>
     bool IsCompleted { get; }
 
+    /// <summary>
+    /// Was the request cancelled?
+    /// </summary>
     bool IsCancelled { get; }
 
+    /// <summary>
+    /// Was the request sucessful?
+    /// </summary>
     bool IsSuccess { get; }
 
+    /// <summary>
+    /// Mark this token as rejected.
+    /// </summary>
     void Reject ();
 
+    /// <summary>
+    /// Mark this token as expired.
+    /// </summary>
     void Expire ();
 
+    /// <summary>
+    /// Mark this token as complete.
+    /// </summary>
     void Complete ();
 
+    /// <summary>
+    /// Mark this token as cancelled. 
+    /// </summary>
     void Cancel ();
 
+    /// <summary>
+    /// The response to this token's request.
+    /// </summary>
     ICorvidHttpClientRequestResponse? Response { get; set; }
 
+    /// <summary>
+    /// Wait for this token to be processed.
+    /// </summary>
+    /// <returns>TThe response to this token's request.</returns>
     Task<ICorvidHttpClientRequestResponse?> WaitUntilCompleteAsync ();
 }

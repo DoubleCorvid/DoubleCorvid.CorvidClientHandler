@@ -31,5 +31,5 @@ public class CorvidHttpClientHandlerFactoryConfig : ICorvidHttpClientHandlerFact
 
     public IReadOnlyDictionary<string, ICorvidHttpClientHandlerConfig> HandlerConfigs { get; init; } = new Dictionary <string, ICorvidHttpClientHandlerConfig>();
 
-    public ICorvidHttpClientHandlerConfig GetClientConfig (string name) => HandlerConfigs.TryGetValue (name, out ICorvidHttpClientHandlerConfig? config) ? config : DefaultHandlerConfig;
+    public ICorvidHttpClientHandlerConfig GetClientHandlerConfig (string name) => HandlerConfigs.TryGetValue (name, out ICorvidHttpClientHandlerConfig? config) ? config : DefaultHandlerConfig;
 }

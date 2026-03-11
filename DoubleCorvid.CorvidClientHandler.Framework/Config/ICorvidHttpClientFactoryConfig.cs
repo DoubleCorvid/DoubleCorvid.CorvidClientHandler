@@ -22,9 +22,20 @@
 namespace DoubleCorvid.CorvidClientHandler.Framework.Config;
 
 public interface ICorvidHttpClientFactoryConfig {
+    /// <summary>
+    /// The default http client config to use if one is not found for a particular client.
+    /// </summary>
     ICorvidHttpClientConfig DefaultClientConfig { get; }
 
+    /// <summary>
+    /// A dictionary of http cleint configs, with names as keys.
+    /// </summary>
     IReadOnlyDictionary<string, ICorvidHttpClientConfig> ClientConfigs { get; }
 
+    /// <summary>
+    /// Get the config for client `name`.
+    /// </summary>
+    /// <param name="name">The name of the client to find a config for.</param>
+    /// <returns>A config for client `name`.</returns>
     ICorvidHttpClientConfig GetClientConfig (string name);
 }

@@ -24,13 +24,48 @@ using DoubleCorvid.CorvidClientHandler.Framework.Config;
 namespace DoubleCorvid.CorvidClientHandler.Framework;
 
 public interface ICorvidHttpClientHandler {
+    /// <summary>
+    /// The client this handler uses to execute requests.
+    /// </summary>
     HttpClient HttpClient { get; }
 
+    /// <summary>
+    /// This handler's configuration.
+    /// </summary>
     ICorvidHttpClientHandlerConfig Config { get; }
 
+    /// <summary>
+    /// Execute a get request.
+    /// </summary>
+    /// <param name="config">The requests parameters</param>
+    /// <returns>A token for this request.</returns>
     Task<ICorvidHttpClientRequestToken?> GetAsync (ICorvidHttpClientRequestConfig config);
+
+    /// <summary>
+    /// Execute a patch request.
+    /// </summary>
+    /// <param name="config">The requests parameters</param>
+    /// <returns>A token for this request.</returns>
     Task<ICorvidHttpClientRequestToken?> PatchAsync (ICorvidHttpClientRequestConfig config);
+
+    /// <summary>
+    /// Execute a post request.
+    /// </summary>
+    /// <param name="config">The requests parameters</param>
+    /// <returns>A token for this request.</returns>
     Task<ICorvidHttpClientRequestToken?> PostAsync (ICorvidHttpClientRequestConfig config);
+
+    /// <summary>
+    /// Execute a put request.
+    /// </summary>
+    /// <param name="config">The requests parameters</param>
+    /// <returns>A token for this request.</returns>
     Task<ICorvidHttpClientRequestToken?> PutAsync (ICorvidHttpClientRequestConfig config);
+
+    /// <summary>
+    /// Execute a delete request.
+    /// </summary>
+    /// <param name="config">The requests parameters</param>
+    /// <returns>A token for this request.</returns>
     Task<ICorvidHttpClientRequestToken?> DeleteAsync (ICorvidHttpClientRequestConfig config);
 }

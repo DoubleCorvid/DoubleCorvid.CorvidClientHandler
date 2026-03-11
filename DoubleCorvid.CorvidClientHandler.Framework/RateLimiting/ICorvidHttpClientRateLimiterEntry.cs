@@ -24,9 +24,18 @@ using DoubleCorvid.CorvidClientHandler.Framework.Config;
 namespace DoubleCorvid.CorvidClientHandler.Framework.RateLimiting;
 
 public interface ICorvidHttpClientRateLimiterEntry {
+    /// <summary>
+    /// This request's configuration, supplied to `ICorvidHttpClientRateLimiterEntry.Requester` when executed.
+    /// </summary>
     ICorvidHttpClientRequestConfig RequestConfig { get; }
 
+    /// <summary>
+    /// The function that makes the request.
+    /// </summary>
     Func<ICorvidHttpClientRequestConfig, Task<ICorvidHttpClientRequestResponse>> Requester { get; }
 
+    /// <summary>
+    /// The token associated with this entry.
+    /// </summary>
     ICorvidHttpClientRequestToken Token { get; }
 }

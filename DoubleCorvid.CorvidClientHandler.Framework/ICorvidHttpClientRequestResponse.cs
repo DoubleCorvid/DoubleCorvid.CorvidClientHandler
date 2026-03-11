@@ -22,5 +22,8 @@
 namespace DoubleCorvid.CorvidClientHandler.Framework;
 
 public interface ICorvidHttpClientRequestResponse {
+    /// <summary>
+    /// The request's response.
+    /// </summary>
     HttpResponseMessage HttpResponseMessage { get; }
 }

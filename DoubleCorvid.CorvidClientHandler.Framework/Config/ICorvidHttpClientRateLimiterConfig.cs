@@ -22,5 +22,8 @@
 namespace DoubleCorvid.CorvidClientHandler.Framework.Config;
 
 public interface ICorvidHttpClientRateLimiterConfig {
+    /// <summary>
+    /// The delay between each request.
+    /// </summary>
     int RateLimitDelay { get; }
 }
