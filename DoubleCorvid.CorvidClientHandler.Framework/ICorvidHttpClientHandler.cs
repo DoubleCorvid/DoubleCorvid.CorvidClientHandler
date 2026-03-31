@@ -39,33 +39,33 @@ public interface ICorvidHttpClientHandler {
     /// </summary>
     /// <param name="config">The requests parameters</param>
     /// <returns>A token for this request.</returns>
-    Task<ICorvidHttpClientRequestToken?> GetAsync (ICorvidHttpClientRequestConfig config);
+    Task<ICorvidHttpClientRequestToken> GetAsync (ICorvidHttpClientRequestConfig config);
 
     /// <summary>
     /// Execute a patch request.
     /// </summary>
     /// <param name="config">The requests parameters</param>
     /// <returns>A token for this request.</returns>
-    Task<ICorvidHttpClientRequestToken?> PatchAsync (ICorvidHttpClientRequestConfig config);
+    Task<ICorvidHttpClientRequestToken> PatchAsync (ICorvidHttpClientRequestConfig config);
 
     /// <summary>
     /// Execute a post request.
     /// </summary>
     /// <param name="config">The requests parameters</param>
     /// <returns>A token for this request.</returns>
-    Task<ICorvidHttpClientRequestToken?> PostAsync (ICorvidHttpClientRequestConfig config);
+    Task<ICorvidHttpClientRequestToken> PostAsync (ICorvidHttpClientRequestConfig config);
 
     /// <summary>
     /// Execute a put request.
     /// </summary>
     /// <param name="config">The requests parameters</param>
     /// <returns>A token for this request.</returns>
-    Task<ICorvidHttpClientRequestToken?> PutAsync (ICorvidHttpClientRequestConfig config);
+    Task<ICorvidHttpClientRequestToken> PutAsync (ICorvidHttpClientRequestConfig config);
 
     /// <summary>
     /// Execute a delete request.
     /// </summary>
     /// <param name="config">The requests parameters</param>
     /// <returns>A token for this request.</returns>
-    Task<ICorvidHttpClientRequestToken?> DeleteAsync (ICorvidHttpClientRequestConfig config);
+    Task<ICorvidHttpClientRequestToken> DeleteAsync (ICorvidHttpClientRequestConfig config);
 }

@@ -59,7 +59,7 @@ public class CorvidHttpClientHandler (ICorvidHttpClientHandlerConfig config, Htt
     ];
 
     #region Get
-    public async Task<ICorvidHttpClientRequestToken?> GetAsync (ICorvidHttpClientRequestConfig requestConfig) {
+    public async Task<ICorvidHttpClientRequestToken> GetAsync (ICorvidHttpClientRequestConfig requestConfig) {
         return await ExecuteRequest (requestConfig, ExecuteGetAsync);
     }
 
@@ -69,7 +69,7 @@ public class CorvidHttpClientHandler (ICorvidHttpClientHandlerConfig config, Htt
     #endregion
 
     #region Patch
-    public async Task<ICorvidHttpClientRequestToken?> PatchAsync (ICorvidHttpClientRequestConfig requestConfig) {
+    public async Task<ICorvidHttpClientRequestToken> PatchAsync (ICorvidHttpClientRequestConfig requestConfig) {
         return await ExecuteRequest (requestConfig, ExecutePatchAsync);
     }
 
@@ -79,7 +79,7 @@ public class CorvidHttpClientHandler (ICorvidHttpClientHandlerConfig config, Htt
     #endregion
 
     #region Post
-    public async Task<ICorvidHttpClientRequestToken?> PostAsync (ICorvidHttpClientRequestConfig requestConfig) {
+    public async Task<ICorvidHttpClientRequestToken> PostAsync (ICorvidHttpClientRequestConfig requestConfig) {
         return await ExecuteRequest (requestConfig, ExecutePostAsync);
     }
 
@@ -89,7 +89,7 @@ public class CorvidHttpClientHandler (ICorvidHttpClientHandlerConfig config, Htt
     #endregion
 
     #region Put
-    public async Task<ICorvidHttpClientRequestToken?> PutAsync (ICorvidHttpClientRequestConfig requestConfig) {
+    public async Task<ICorvidHttpClientRequestToken> PutAsync (ICorvidHttpClientRequestConfig requestConfig) {
         return await ExecuteRequest (requestConfig, ExecutePutAsync);
     }
 
@@ -99,7 +99,7 @@ public class CorvidHttpClientHandler (ICorvidHttpClientHandlerConfig config, Htt
     #endregion
 
     #region Delete
-    public async Task<ICorvidHttpClientRequestToken?> DeleteAsync (ICorvidHttpClientRequestConfig requestConfig) {
+    public async Task<ICorvidHttpClientRequestToken> DeleteAsync (ICorvidHttpClientRequestConfig requestConfig) {
         return await ExecuteRequest (requestConfig, ExecuteDeleteAsync);
     }
 

@@ -19,7 +19,6 @@
  * IN THE SOFTWARE.
  */
 
-using DoubleCorvid.CorvidClientHandler.Framework;
 using DoubleCorvid.CorvidClientHandler.Framework.Config;
 
 namespace DoubleCorvid.CorvidClientHandler.Config;
