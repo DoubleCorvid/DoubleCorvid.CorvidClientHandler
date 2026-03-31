@@ -1,15 +1,15 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <ItemGroup>
-    <ProjectReference Include="..\DoubleCorvid.CorvidClientHandler\DoubleCorvid.CorvidClientHandler.csproj" />
-    <ProjectReference Include="..\DoubleCorvid.CorvidClientHandler.Framework\DoubleCorvid.CorvidClientHandler.Framework.csproj" />
-  </ItemGroup>
-
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DoubleCorvid.CorvidClientHandler\DoubleCorvid.CorvidClientHandler.csproj" />
+    <ProjectReference Include="..\DoubleCorvid.CorvidClientHandler.Framework\DoubleCorvid.CorvidClientHandler.Framework.csproj" />
+  </ItemGroup>
 
 </Project>
