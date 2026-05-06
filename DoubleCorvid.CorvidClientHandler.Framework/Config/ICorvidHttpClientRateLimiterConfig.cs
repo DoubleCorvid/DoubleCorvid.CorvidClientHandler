@@ -26,4 +26,14 @@ public interface ICorvidHttpClientRateLimiterConfig {
     /// The delay between each request.
     /// </summary>
     int RateLimitDelay { get; }
+
+    /// <summary>
+    /// The default cancellation token.
+    /// </summary>
+    CancellationToken DefaultCancellationToken { get; }
+
+    /// <summary>
+    /// Should the rate limiter start after being constructed?
+    /// </summary>
+    bool StartAfterConstruction { get; }
 }

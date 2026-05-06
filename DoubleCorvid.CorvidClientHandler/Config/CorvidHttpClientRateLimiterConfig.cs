@@ -25,4 +25,8 @@ namespace DoubleCorvid.CorvidClientHandler.Config;
 
 public class CorvidHttpClientRateLimiterConfig : ICorvidHttpClientRateLimiterConfig {
     public int RateLimitDelay { get; init; } = 100;
+
+    public required CancellationToken DefaultCancellationToken { get; init; }
+
+    public bool StartAfterConstruction { get; init; } = true;
 }

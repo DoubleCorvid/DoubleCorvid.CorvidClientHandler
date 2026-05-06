@@ -29,7 +29,7 @@ public interface ICorvidHttpClientRateLimiter {
     /// </summary>
     /// <param name="cancellationToken">The cancellation token used to cancel processing.</param>
     /// <returns>A task that can be awaited</returns>
-    Task RunAsync (CancellationToken cancellationToken);
+    Task Run (CancellationToken? cancellationToken);
 
     /// <summary>
     /// Stop the machine.

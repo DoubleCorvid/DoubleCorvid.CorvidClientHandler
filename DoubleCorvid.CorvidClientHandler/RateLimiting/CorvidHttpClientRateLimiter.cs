@@ -26,8 +26,8 @@ using DoubleCorvid.CorvidClientHandler.Framework.RateLimiting;
 
 namespace DoubleCorvid.CorvidClientHandler.RateLimiting;
 
-public class CorvidHttpClientRateLimiter (ICorvidHttpClientRateLimiterConfig config) : ICorvidHttpClientRateLimiter {
-    public ICorvidHttpClientRateLimiterConfig Config { get; } = config;
+public class CorvidHttpClientRateLimiter : ICorvidHttpClientRateLimiter {
+    public ICorvidHttpClientRateLimiterConfig Config { get; }
 
     private readonly ConcurrentQueue<ICorvidHttpClientRateLimiterEntry> _entries = [];
     
@@ -41,11 +41,24 @@ public class CorvidHttpClientRateLimiter (ICorvidHttpClientRateLimiterConfig con
 
     protected DateTime _lastRequestTimestamp = DateTime.UtcNow;
 
-    public Task RunAsync (CancellationToken cancellationToken) {
-        return Task.Run (async () =>{
+    public Task? RunningTask { get; private set; }
+
+    public CorvidHttpClientRateLimiter (ICorvidHttpClientRateLimiterConfig config) {
+        Config = config;
+
+        if (config.StartAfterConstruction) {
+            RunningTask = Run (config.DefaultCancellationToken);
+        }
+    }
+
+
+    public Task Run (CancellationToken? cancellationToken = null) {
+        var token = cancellationToken is null ? Config.DefaultCancellationToken : (CancellationToken) cancellationToken;
+
+        RunningTask = Task.Run (async () =>{
             _processing = true;
 
-            while (_processing && !cancellationToken.IsCancellationRequested) {
+            while (_processing && !token.IsCancellationRequested) {
                 if (!_entries.IsEmpty
                 && _entries.TryDequeue (out var entry)
                 && entry is not null
@@ -53,7 +66,9 @@ public class CorvidHttpClientRateLimiter (ICorvidHttpClientRateLimiterConfig con
                     await ProcessEntry (entry);
                 }
             }
-        }, cancellationToken);
+        }, token);
+
+        return RunningTask;
     }
 
     private async Task ProcessEntry (ICorvidHttpClientRateLimiterEntry entry) {

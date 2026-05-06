@@ -33,20 +33,20 @@ public class Program {
 
     private static readonly CancellationTokenSource _cancellationTokenSource = new ();
 
-    private static CancellationToken _cancelToken = _cancellationTokenSource.Token;
-
     public static async Task Main () {
         await ExecuteJsonPlaceholderExamples ();
     }
 
     private static async Task ExecuteJsonPlaceholderExamples () {
-        var ratelimiter = new CorvidHttpClientRateLimiter (new CorvidHttpClientRateLimiterConfig ());
+        var ratelimiter = new CorvidHttpClientRateLimiter (new CorvidHttpClientRateLimiterConfig {
+             DefaultCancellationToken = _cancellationTokenSource.Token
+        });
 
         var handlerFactory = BuildHandlerFactory (ratelimiter);
 
         var client = handlerFactory.CreateHandler (_clientName);
 
-        _ = ratelimiter.RunAsync (_cancelToken);
+        _ = ratelimiter.Run ();
 
         await ExecuteGetExampleAsync (client);
 
@@ -69,7 +69,7 @@ public class Program {
         var token = await client.GetAsync (new CorvidHttpClientRequestConfig {
             Route = "posts/1",
             HttpCompletionOption = HttpCompletionOption.ResponseContentRead,
-            CancellationToken = _cancelToken
+            CancellationToken = _cancellationTokenSource.Token
         });
         
         if (token is null || token.IsRejected) {
@@ -98,7 +98,7 @@ public class Program {
             Content = new StringContent (JsonSerializer.Serialize<object> (new {
                 Title = "foo"
             })),
-            CancellationToken = _cancelToken
+            CancellationToken = _cancellationTokenSource.Token
         });
         
         if (token is null || token.IsRejected) {
@@ -129,7 +129,7 @@ public class Program {
                 Body = "bar",
                 UserId = 1,
             })),
-            CancellationToken = _cancelToken
+            CancellationToken = _cancellationTokenSource.Token
         });
 
         if (token is null || token.IsRejected) {
@@ -161,7 +161,7 @@ public class Program {
                 Body = "bar",
                 UserId = 1,
             })),
-            CancellationToken = _cancelToken
+            CancellationToken = _cancellationTokenSource.Token
         });
 
         if (token is null || token.IsRejected) {
@@ -187,7 +187,7 @@ public class Program {
         var token = await client.DeleteAsync (new CorvidHttpClientRequestConfig {
             Route = "posts/1",
             HttpCompletionOption = HttpCompletionOption.ResponseContentRead,
-            CancellationToken = _cancelToken
+            CancellationToken = _cancellationTokenSource.Token
         });
 
         if (token is null || token.IsRejected) {
