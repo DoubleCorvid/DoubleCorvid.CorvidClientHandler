@@ -24,6 +24,8 @@ using System.Net.Http.Headers;
 using DoubleCorvid.CorvidClientHandler.Framework;
 using DoubleCorvid.CorvidClientHandler.Framework.Config;
 
+using Microsoft.Extensions.Logging;
+
 namespace DoubleCorvid.CorvidClientHandler;
 
 public class CorvidHttpClientFactory (ICorvidHttpClientFactoryConfig config) : ICorvidHttpClientFactory {
