@@ -1,4 +1,4 @@
-﻿/* Copyright © 2025 Raven Crowe
+﻿/* Copyright © 2026 Raven Crowe
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to
@@ -20,43 +20,17 @@
  */
 
 using System.Net;
-using System.Runtime.CompilerServices;
-
 using DoubleCorvid.CorvidClientHandler.Framework;
 using DoubleCorvid.CorvidClientHandler.Framework.Config;
-using DoubleCorvid.CorvidClientHandler.Framework.RateLimiting;
 
 namespace DoubleCorvid.CorvidClientHandler;
 
 public class CorvidHttpClientHandler (ICorvidHttpClientHandlerConfig config, HttpClient client) : ICorvidHttpClientHandler {
+    public const string RetryAfter = "Retry-After";
+
     public ICorvidHttpClientHandlerConfig Config { get; } = config;
 
     public HttpClient HttpClient { get; } = client;
-
-    protected List<HttpStatusCode> _oneShotStatusCodes = [
-        HttpStatusCode.MovedPermanently,
-        HttpStatusCode.TemporaryRedirect,
-        HttpStatusCode.SeeOther,
-        HttpStatusCode.NotModified,
-        HttpStatusCode.TemporaryRedirect,
-        HttpStatusCode.PermanentRedirect,
-        HttpStatusCode.BadRequest,
-        HttpStatusCode.Unauthorized,
-        HttpStatusCode.Forbidden,
-        HttpStatusCode.NotFound,
-        HttpStatusCode.MethodNotAllowed,
-        HttpStatusCode.NotAcceptable,
-        HttpStatusCode.Gone,
-        HttpStatusCode.InternalServerError,
-        HttpStatusCode.NotImplemented,
-        HttpStatusCode.BadGateway,
-        HttpStatusCode.ServiceUnavailable,
-        HttpStatusCode.HttpVersionNotSupported,
-        HttpStatusCode.VariantAlsoNegotiates,
-        HttpStatusCode.InsufficientStorage,
-        HttpStatusCode.LoopDetected,
-        HttpStatusCode.NetworkAuthenticationRequired,
-    ];
 
     #region Get
     public async Task<ICorvidHttpClientRequestToken> GetAsync (ICorvidHttpClientRequestConfig requestConfig) {
@@ -110,20 +84,20 @@ public class CorvidHttpClientHandler (ICorvidHttpClientHandlerConfig config, Htt
 
     protected async Task<ICorvidHttpClientRequestToken> ExecuteRequest (ICorvidHttpClientRequestConfig requestConfig, Func<ICorvidHttpClientRequestConfig, Task<ICorvidHttpClientRequestResponse>> func) {
         if (requestConfig.WithRetry) {
-            return await ExecuteRequestWithRateLimitAndRetry (requestConfig, func);
+            return await ExecuteRequestWithRateLimitAndRetryAsync (requestConfig, func);
         }
         else {
             return ExecuteRequestWithRateLimit (requestConfig, func);
         }
     }
-    
-    protected async Task<ICorvidHttpClientRequestToken> ExecuteRequestWithRateLimitAndRetry (ICorvidHttpClientRequestConfig requestConfig, Func<ICorvidHttpClientRequestConfig, Task<ICorvidHttpClientRequestResponse>> func) {
+
+    protected async Task<ICorvidHttpClientRequestToken> ExecuteRequestWithRateLimitAndRetryAsync (ICorvidHttpClientRequestConfig requestConfig, Func<ICorvidHttpClientRequestConfig, Task<ICorvidHttpClientRequestResponse>> func) {
         var retryCount = 0;
 
         ICorvidHttpClientRequestToken token;
 
-        Func<int, int> delayCalc = requestConfig.UseDefaultRetryDelay 
-                                   ? Config.CalculateDelayInMillisecondsForRetryAttempt 
+        Func<int, int> delayCalc = requestConfig.UseDefaultRetryDelay
+                                   ? Config.CalculateDelayInMillisecondsForRetryAttempt
                                    : requestConfig.CalculateDelayInMillisecondsForRetryAttempt;
 
         int delay = -1;
@@ -138,7 +112,10 @@ public class CorvidHttpClientHandler (ICorvidHttpClientHandlerConfig config, Htt
             await token.WaitUntilCompleteAsync ();
 
             if (token.IsSuccess) {
-                delay = -1;
+                return token;
+            }
+            else if (DoesResponseHaveRetryAfterHeader (token.Response?.HttpResponseMessage)) {
+                delay = GetReponseRetryAfterInSeconds (token.Response?.HttpResponseMessage.Headers.GetValues (RetryAfter) ?? []);
             }
             else if (requestConfig.UseDefaultRetryDelay) {
                 delay = Config.CalculateDelayInMillisecondsForRetryAttempt (retryCount++);
@@ -146,9 +123,42 @@ public class CorvidHttpClientHandler (ICorvidHttpClientHandlerConfig config, Htt
             else {
                 delay = requestConfig.CalculateDelayInMillisecondsForRetryAttempt (retryCount++);
             }
+
+            await Task.Delay (delay, requestConfig.CancellationToken);
         } while (delay > 0 && !requestConfig.CancellationToken.IsCancellationRequested);
 
         return token;
+    }
+
+    private static bool DoesResponseHaveRetryAfterHeader (HttpResponseMessage? response) => response?.Headers.Contains ("Try-After") ?? false;
+
+    private static int GetReponseRetryAfterInSeconds (IEnumerable<string> retryAfterHeaders) {
+        if (!retryAfterHeaders.Any ()) {
+            return 0;
+        }
+
+        int delay = 0;
+
+        foreach (var value in retryAfterHeaders) {
+            delay += ParseDelayInSeconds (value);
+        }
+
+        return delay;
+    }
+
+    private static int ParseDelayInSeconds (string header) {
+        int delay = 0;
+
+        if (int.TryParse (header, out int parsed)) {
+            delay = parsed;
+        }
+        else if (DateTime.TryParse (header, out var date)) {
+            var span = date - DateTime.UtcNow;
+
+            delay = span.Seconds;
+        }
+
+        return delay;
     }
 
     protected bool ShouldRetryRequest (HttpStatusCode code) => Config.NonretryStatusCodes.Contains (code);

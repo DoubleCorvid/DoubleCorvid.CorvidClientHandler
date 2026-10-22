@@ -1,4 +1,4 @@
-﻿/* Copyright © 2025 Raven Crowe
+﻿/* Copyright © 2026 Raven Crowe
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to
@@ -36,7 +36,7 @@ public class CorvidHttpClientRequestConfig : ICorvidHttpClientRequestConfig {
 
     public int RetryDelayPerAttemptInMilliseconds { get; init; } = 10000;
 
-    public int MaxRetryAttempts { get; init; }  = 5;
+    public int MaxRetryAttempts { get; init; } = 5;
 
     public required CancellationToken CancellationToken { get; init; }
 

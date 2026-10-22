@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="DoubleCorvid.CorvidClientHandler.Examples/DoubleCorvid.CorvidClientHandler.Examples.csproj" />
+  <Project Path="DoubleCorvid.CorvidClientHandler.Framework/DoubleCorvid.CorvidClientHandler.Framework.csproj" />
+  <Project Path="DoubleCorvid.CorvidClientHandler/DoubleCorvid.CorvidClientHandler.csproj" />
+</Solution>

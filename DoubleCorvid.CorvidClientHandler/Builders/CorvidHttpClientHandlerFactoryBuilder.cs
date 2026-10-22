@@ -1,4 +1,4 @@
-/* Copyright © 2025 Raven Crowe
+/* Copyright © 2026 Raven Crowe
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to
@@ -26,7 +26,7 @@ using DoubleCorvid.CorvidClientHandler.Framework.Config;
 namespace DoubleCorvid.CorvidClientHandler.Builders;
 
 public class CorvidHttpClientHandlerFactoryBuilder : ICorvidHttpClientHandlerFactoryBuilder {
-    public required  ICorvidHttpClientHandlerFactoryConfig HttpClientHandlerFactoryConfig { private get; set; }
+    public required ICorvidHttpClientHandlerFactoryConfig HttpClientHandlerFactoryConfig { private get; set; }
 
     public ICorvidHttpClientHandlerFactory BuildHandlerFactory (string client = "default") => new CorvidHttpClientHandlerFactory (HttpClientHandlerFactoryConfig);
 }

@@ -1,4 +1,4 @@
-﻿/* Copyright © 2025 Raven Crowe
+﻿/* Copyright © 2026 Raven Crowe
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to
@@ -26,7 +26,7 @@ public interface ICorvidHttpClientHandlerFactoryConfig {
     /// The client factory this handler factory will use to build clients.
     /// </summary>
     IHttpClientFactory ClientFactory { get; }
-    
+
     /// <summary>
     /// The deafult handler config to use if one is not found for a particular name.
     /// </summary>

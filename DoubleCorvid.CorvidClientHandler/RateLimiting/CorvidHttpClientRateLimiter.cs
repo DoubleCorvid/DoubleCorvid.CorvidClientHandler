@@ -1,4 +1,4 @@
-/* Copyright © 2025 Raven Crowe
+/* Copyright © 2026 Raven Crowe
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to
@@ -29,17 +29,15 @@ namespace DoubleCorvid.CorvidClientHandler.RateLimiting;
 public class CorvidHttpClientRateLimiter : ICorvidHttpClientRateLimiter {
     public ICorvidHttpClientRateLimiterConfig Config { get; }
 
-    private readonly ConcurrentQueue<ICorvidHttpClientRateLimiterEntry> _entries = [];
-    
-    private bool _processing = false;
+    private readonly ConcurrentQueue<ICorvidHttpClientRateLimiterEntry> _entries = [ ];
 
-    protected readonly SemaphoreSlim _timestampSemaphore = new (1);
+    private bool _processing = false;
 
     protected readonly ReaderWriterLock _timestampLock = new ();
 
-    protected readonly int _timestampLockTimeout = 10;
-
     protected DateTime _lastRequestTimestamp = DateTime.UtcNow;
+
+    private bool disposed;
 
     public Task? RunningTask { get; private set; }
 
@@ -55,7 +53,7 @@ public class CorvidHttpClientRateLimiter : ICorvidHttpClientRateLimiter {
     public Task Run (CancellationToken? cancellationToken = null) {
         var token = cancellationToken is null ? Config.DefaultCancellationToken : (CancellationToken) cancellationToken;
 
-        RunningTask = Task.Run (async () =>{
+        RunningTask = Task.Run (async () => {
             _processing = true;
 
             while (_processing && !token.IsCancellationRequested) {
@@ -71,12 +69,31 @@ public class CorvidHttpClientRateLimiter : ICorvidHttpClientRateLimiter {
         return RunningTask;
     }
 
+    public ICorvidHttpClientRequestToken EnqueueRequest (ICorvidHttpClientRequestConfig requestConfig,
+                                                           Func<ICorvidHttpClientRequestConfig, Task<ICorvidHttpClientRequestResponse>> requester) {
+        var token = new CorvidHttpClientRequestToken ();
+
+        var entry = new CorvidHttpClientRateLimiterEntry {
+            RequestConfig = requestConfig,
+            Requester = requester,
+            Token = token,
+        };
+
+        _entries.Enqueue (entry);
+
+        return token;
+    }
+
+    public void Stop () {
+        _processing = false;
+    }
+
     private async Task ProcessEntry (ICorvidHttpClientRateLimiterEntry entry) {
         var config = entry.RequestConfig;
 
         var token = entry.Token;
 
-        if (config.CancellationToken.IsCancellationRequested) {
+        if (config.CancellationToken.IsCancellationRequested || !token.IsValid) {
             token.Expire ();
         }
         else {
@@ -88,7 +105,15 @@ public class CorvidHttpClientRateLimiter : ICorvidHttpClientRateLimiter {
         }
     }
 
-    protected async Task<ICorvidHttpClientRequestResponse> ExecuteRequest (ICorvidHttpClientRequestConfig requestConfig, Func<ICorvidHttpClientRequestConfig, Task<ICorvidHttpClientRequestResponse>> func) {
+    public void ClearQueue () {
+        foreach (var entry in _entries) {
+            entry.Token.Expire ();
+        }
+
+        _entries.Clear ();
+    }
+
+    private async Task<ICorvidHttpClientRequestResponse> ExecuteRequest (ICorvidHttpClientRequestConfig requestConfig, Func<ICorvidHttpClientRequestConfig, Task<ICorvidHttpClientRequestResponse>> func) {
         var delay = Config.RateLimitDelay;
 
         if (delay > 0) {
@@ -107,40 +132,44 @@ public class CorvidHttpClientRateLimiter : ICorvidHttpClientRateLimiter {
     }
 
     private async Task UpdateLastRequestTimeStamp (CancellationToken token) {
-        await _timestampSemaphore.WaitAsync (token);
-
-        _lastRequestTimestamp = DateTime.UtcNow;
-
-        _timestampSemaphore.Release ();
+        lock (_timestampLock) {
+            _lastRequestTimestamp = DateTime.UtcNow;
+        }
     }
 
+    private int GetMilisecondsSinceLastRequest (CancellationToken token) {
+        TimeSpan span;
 
-    protected int GetMilisecondsSinceLastRequest (CancellationToken token) {
-        var span = DateTime.UtcNow - _lastRequestTimestamp;
+        lock (_timestampLock) {
+            span = DateTime.UtcNow - _lastRequestTimestamp;
+        }
 
         return span.Milliseconds;
     }
 
-    public void Stop () {
-        _processing = false;
+    protected virtual void Dispose (bool disposing) {
+        if (!disposed) {
+            if (disposing) {
+                ClearQueue ();
+            }
+
+            // TODO: free unmanaged resources (unmanaged objects) and override finalizer
+            // TODO: set large fields to null
+            disposed = true;
+        }
     }
 
-    public void ClearQueue () {
-        _entries.Clear ();
+    // // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
+    // ~CorvidHttpClientRateLimiter()
+    // {
+    //     // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+    //     Dispose(disposing: false);
+    // }
+
+    public void Dispose () {
+        // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+        Dispose (disposing: true);
+        GC.SuppressFinalize (this);
     }
 
-    public ICorvidHttpClientRequestToken EnqueueRequest (ICorvidHttpClientRequestConfig requestConfig,
-                                                           Func<ICorvidHttpClientRequestConfig, Task<ICorvidHttpClientRequestResponse>> requester) {
-        var token = new CorvidHttpClientRequestToken ();
-
-        var entry = new CorvidHttpClientRateLimiterEntry {
-            RequestConfig = requestConfig,
-            Requester = requester,
-            Token = token,
-        };
-
-        _entries.Enqueue (entry);
-
-        return token;
-    }
 }

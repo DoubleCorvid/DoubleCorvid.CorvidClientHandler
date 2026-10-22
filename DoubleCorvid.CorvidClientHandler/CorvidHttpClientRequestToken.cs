@@ -1,4 +1,4 @@
-/* Copyright © 2025 Raven Crowe
+/* Copyright © 2026 Raven Crowe
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to
@@ -34,30 +34,32 @@ public class CorvidHttpClientRequestToken : ICorvidHttpClientRequestToken {
 
     public bool IsCancelled { get; private set; }
 
+    public bool IsValid => !IsRejected && !IsExpired && !IsCompleted && !IsCancelled;
+
     public bool IsSuccess => Response?.HttpResponseMessage.IsSuccessStatusCode ?? false;
 
-    public void Reject () { 
+    public void Reject () {
         taskCompletionSource.SetCanceled ();
 
-        IsRejected = true; 
+        IsRejected = true;
     }
 
-    public void Expire () { 
+    public void Expire () {
         taskCompletionSource.SetCanceled ();
 
-        IsExpired = true; 
+        IsExpired = true;
     }
 
     public void Complete () {
         taskCompletionSource.SetResult (Response);
 
-        IsCompleted = true; 
+        IsCompleted = true;
     }
 
     public void Cancel () {
         taskCompletionSource.SetCanceled ();
-        
-        IsCancelled = true; 
+
+        IsCancelled = true;
     }
 
     public ICorvidHttpClientRequestResponse? Response { get; set; }

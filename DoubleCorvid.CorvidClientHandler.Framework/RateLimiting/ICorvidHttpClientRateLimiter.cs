@@ -1,4 +1,4 @@
-/* Copyright © 2025 Raven Crowe
+/* Copyright © 2026 Raven Crowe
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to
@@ -23,7 +23,7 @@ using DoubleCorvid.CorvidClientHandler.Framework.Config;
 
 namespace DoubleCorvid.CorvidClientHandler.Framework.RateLimiting;
 
-public interface ICorvidHttpClientRateLimiter {
+public interface ICorvidHttpClientRateLimiter : IDisposable {
     /// <summary>
     /// Start running the state machine.
     /// </summary>
@@ -37,11 +37,16 @@ public interface ICorvidHttpClientRateLimiter {
     void Stop ();
 
     /// <summary>
+    /// Clear the machine's queue.
+    /// </summary>
+    void ClearQueue ();
+
+    /// <summary>
     /// Enqueue a request.
     /// </summary>
     /// <param name="requestConfig">The request's configuration.</param>
     /// <param name="requester">The function that executes the request.</param>
     /// <returns>A token associated with this request.</returns>
-    ICorvidHttpClientRequestToken EnqueueRequest (ICorvidHttpClientRequestConfig requestConfig, 
+    ICorvidHttpClientRequestToken EnqueueRequest (ICorvidHttpClientRequestConfig requestConfig,
                                                       Func<ICorvidHttpClientRequestConfig, Task<ICorvidHttpClientRequestResponse>> requester);
 }

@@ -1,4 +1,4 @@
-﻿/* Copyright © 2025 Raven Crowe
+﻿/* Copyright © 2026 Raven Crowe
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to
@@ -25,12 +25,11 @@ using DoubleCorvid.CorvidClientHandler.Framework.RateLimiting;
 namespace DoubleCorvid.CorvidClientHandler.Framework.Config;
 
 public interface ICorvidHttpClientHandlerConfig {
-    
     /// <summary>
     /// The name of this handler.
     /// </summary>
     string Name { get; }
- 
+
     /// <summary>
     /// TShould requests be rate limited?
     /// </summary>
@@ -40,7 +39,7 @@ public interface ICorvidHttpClientHandlerConfig {
     /// The rate limiter that this client will use.
     /// </summary>
     ICorvidHttpClientRateLimiter RateLimiter { get; }
-    
+
     /// <summary>
     /// The status codes that shouldn't be retried.
     /// </summary>
@@ -55,6 +54,6 @@ public interface ICorvidHttpClientHandlerConfig {
     /// Calculate the delay for attempt number `attempt` in milliseconds.
     /// </summary>
     /// <param name="attempt">Which attempt to calculate for, starting at 1.</param>
-    /// <returns>How long to to elay for in milliseconds.</returns>
+    /// <returns>Delay length in milliseconds.</returns>
     int CalculateDelayInMillisecondsForRetryAttempt (int attempt);
 }

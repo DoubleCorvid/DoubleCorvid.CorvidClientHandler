@@ -1,4 +1,4 @@
-﻿/* Copyright © 2025 Raven Crowe
+﻿/* Copyright © 2026 Raven Crowe
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to
@@ -19,7 +19,6 @@
  * IN THE SOFTWARE.
  */
 
-using DoubleCorvid.CorvidClientHandler.Framework.Builders;
 using DoubleCorvid.CorvidClientHandler.Framework.Config;
 
 namespace DoubleCorvid.CorvidClientHandler.Config;
@@ -29,7 +28,7 @@ public class CorvidHttpClientHandlerFactoryConfig : ICorvidHttpClientHandlerFact
 
     public required ICorvidHttpClientHandlerConfig DefaultHandlerConfig { get; init; }
 
-    public IReadOnlyDictionary<string, ICorvidHttpClientHandlerConfig> HandlerConfigs { get; init; } = new Dictionary <string, ICorvidHttpClientHandlerConfig>();
+    public IReadOnlyDictionary<string, ICorvidHttpClientHandlerConfig> HandlerConfigs { get; init; } = new Dictionary<string, ICorvidHttpClientHandlerConfig> ();
 
     public ICorvidHttpClientHandlerConfig GetClientHandlerConfig (string name) => HandlerConfigs.TryGetValue (name, out ICorvidHttpClientHandlerConfig? config) ? config : DefaultHandlerConfig;
 }

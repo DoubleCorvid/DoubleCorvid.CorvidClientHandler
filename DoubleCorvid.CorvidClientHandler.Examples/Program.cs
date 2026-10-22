@@ -1,4 +1,4 @@
-﻿/* Copyright © 2025 Raven Crowe
+﻿/* Copyright © 2026 Raven Crowe
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to
@@ -20,6 +20,7 @@
  */
 
 using System.Text.Json;
+
 using DoubleCorvid.CorvidClientHandler.Builders;
 using DoubleCorvid.CorvidClientHandler.Config;
 using DoubleCorvid.CorvidClientHandler.Framework;
@@ -39,7 +40,7 @@ public class Program {
 
     private static async Task ExecuteJsonPlaceholderExamples () {
         var ratelimiter = new CorvidHttpClientRateLimiter (new CorvidHttpClientRateLimiterConfig {
-             DefaultCancellationToken = _cancellationTokenSource.Token
+            DefaultCancellationToken = _cancellationTokenSource.Token
         });
 
         var handlerFactory = BuildHandlerFactory (ratelimiter);
@@ -71,7 +72,7 @@ public class Program {
             HttpCompletionOption = HttpCompletionOption.ResponseContentRead,
             CancellationToken = _cancellationTokenSource.Token
         });
-        
+
         if (token is null || token.IsRejected) {
             Console.WriteLine ("Delete request was either rejected, or didn't return a token.");
             return;
@@ -100,7 +101,7 @@ public class Program {
             })),
             CancellationToken = _cancellationTokenSource.Token
         });
-        
+
         if (token is null || token.IsRejected) {
             Console.WriteLine ("Patch request was either rejected, or didn't return a token.");
             return;
@@ -120,7 +121,7 @@ public class Program {
 
     private static async Task ExecutePostExampleAsync (ICorvidHttpClientHandler client) {
         Console.WriteLine ("\nExecuting post example...");
-        
+
         var token = await client.PostAsync (new CorvidHttpClientRequestConfig {
             Route = "posts",
             HttpCompletionOption = HttpCompletionOption.ResponseContentRead,
@@ -151,7 +152,7 @@ public class Program {
 
     private static async Task ExecutePutExampleAsync (ICorvidHttpClientHandler client) {
         Console.WriteLine ("\nExecuting put example...");
-        
+
         var token = await client.PutAsync (new CorvidHttpClientRequestConfig {
             Route = "posts/1",
             HttpCompletionOption = HttpCompletionOption.ResponseContentRead,
@@ -171,7 +172,7 @@ public class Program {
 
         var response = await token.WaitUntilCompleteAsync ();
 
-        if (token.IsSuccess && (response?.HttpResponseMessage.IsSuccessStatusCode ?? false)){
+        if (token.IsSuccess && (response?.HttpResponseMessage.IsSuccessStatusCode ?? false)) {
             var str = await response.HttpResponseMessage.Content.ReadAsStringAsync ();
 
             Console.WriteLine ($"Put example succeded:\n{str}");
@@ -183,7 +184,7 @@ public class Program {
 
     private static async Task ExecuteDeleteExampleAsync (ICorvidHttpClientHandler client) {
         Console.WriteLine ("\nExecuting delete example...");
-        
+
         var token = await client.DeleteAsync (new CorvidHttpClientRequestConfig {
             Route = "posts/1",
             HttpCompletionOption = HttpCompletionOption.ResponseContentRead,
@@ -207,15 +208,15 @@ public class Program {
 
     private static ICorvidHttpClientFactory BuildHttpClientFactory () {
         var builder = new CorvidHttpClientFactoryBuilder {
-             HttpClientFactoryConfig = new CorvidHttpClientFactoryConfig {
+            HttpClientFactoryConfig = new CorvidHttpClientFactoryConfig {
                 DefaultClientConfig = new CorvidHttpClientConfig {
                     Name = _clientName,
-                    AcceptedMediaTypes = [ "application/json" ],
+                    AcceptedMediaTypes = ["application/json"],
                     BaseUrl = @"https://jsonplaceholder.typicode.com/",
                     UserAgent = "Corvid Client Handler Example/0.1-ALPHA",
                     DefaultRequestHeaders = new Dictionary<string, string> ()
                 }
-             }
+            }
         };
 
         return builder.BuildClientFactory ();

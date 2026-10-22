@@ -1,4 +1,4 @@
-/* Copyright © 2025 Raven Crowe
+/* Copyright © 2026 Raven Crowe
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to
@@ -48,6 +48,11 @@ public interface ICorvidHttpClientRequestToken {
     bool IsSuccess { get; }
 
     /// <summary>
+    /// Is this token still valid for processing?
+    /// </summary>
+    bool IsValid { get; }
+
+    /// <summary>
     /// Mark this token as rejected.
     /// </summary>
     void Reject ();
@@ -75,6 +80,6 @@ public interface ICorvidHttpClientRequestToken {
     /// <summary>
     /// Wait for this token to be processed.
     /// </summary>
-    /// <returns>TThe response to this token's request.</returns>
+    /// <returns>The response to this token's request.</returns>
     Task<ICorvidHttpClientRequestResponse?> WaitUntilCompleteAsync ();
 }
