@@ -20,12 +20,18 @@
  */
 
 using System.Net;
+
+using DoubleCorvid.CorvidClientHandler.Framework;
 using DoubleCorvid.CorvidClientHandler.Framework.Config;
 using DoubleCorvid.CorvidClientHandler.Framework.RateLimiting;
+
+using Microsoft.Extensions.Logging;
 
 namespace DoubleCorvid.CorvidClientHandler.Config;
 
 public class CorvidHttpClientHandlerConfig : ICorvidHttpClientHandlerConfig {
+    public ILogger<ICorvidHttpClientHandler>? Logger { get; init; }
+
     public required string Name { get; init; }
 
     public bool RateLimitRequests { get; init; } = false;

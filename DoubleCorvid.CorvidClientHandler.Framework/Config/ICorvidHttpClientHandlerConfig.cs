@@ -22,9 +22,16 @@
 using System.Net;
 using DoubleCorvid.CorvidClientHandler.Framework.RateLimiting;
 
+using Microsoft.Extensions.Logging;
+
 namespace DoubleCorvid.CorvidClientHandler.Framework.Config;
 
 public interface ICorvidHttpClientHandlerConfig {
+    /// <summary>
+    /// The logger that this handler should use.
+    /// </summary>
+    ILogger<ICorvidHttpClientHandler>? Logger { get; }
+
     /// <summary>
     /// The name of this handler.
     /// </summary>

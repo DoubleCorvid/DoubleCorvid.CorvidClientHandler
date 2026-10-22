@@ -20,10 +20,15 @@
  */
 
 using DoubleCorvid.CorvidClientHandler.Framework.Config;
+using DoubleCorvid.CorvidClientHandler.Framework.RateLimiting;
+
+using Microsoft.Extensions.Logging;
 
 namespace DoubleCorvid.CorvidClientHandler.Config;
 
 public class CorvidHttpClientRateLimiterConfig : ICorvidHttpClientRateLimiterConfig {
+    public ILogger<ICorvidHttpClientRateLimiter>? Logger { get; init; }
+    
     public int RateLimitDelay { get; init; } = 100;
 
     public required CancellationToken DefaultCancellationToken { get; init; }

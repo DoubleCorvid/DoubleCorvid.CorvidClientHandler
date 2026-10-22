@@ -19,9 +19,16 @@
  * IN THE SOFTWARE.
  */
 
+using Microsoft.Extensions.Logging;
+
 namespace DoubleCorvid.CorvidClientHandler.Framework.Config;
 
 public interface ICorvidHttpClientFactoryConfig {
+    /// <summary>
+    /// The logger that this factory should use.
+    /// </summary>
+    ILogger<ICorvidHttpClientFactory>? Logger { get; }
+
     /// <summary>
     /// The default http client config to use if one is not found for a particular client.
     /// </summary>
@@ -38,4 +45,5 @@ public interface ICorvidHttpClientFactoryConfig {
     /// <param name="name">The name of the client to find a config for.</param>
     /// <returns>A config for client `name`.</returns>
     ICorvidHttpClientConfig GetClientConfig (string name);
+
 }

@@ -19,9 +19,16 @@
  * IN THE SOFTWARE.
  */
 
+using Microsoft.Extensions.Logging;
+
 namespace DoubleCorvid.CorvidClientHandler.Framework.Config;
 
 public interface ICorvidHttpClientHandlerFactoryConfig {
+    /// <summary>
+    /// The logger that this factory should use.
+    /// </summary>
+    ILogger<ICorvidHttpClientHandlerFactory>? Logger { get; }
+
     /// <summary>
     /// The client factory this handler factory will use to build clients.
     /// </summary>

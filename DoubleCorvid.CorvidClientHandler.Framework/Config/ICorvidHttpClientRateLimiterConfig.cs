@@ -19,9 +19,17 @@
  * IN THE SOFTWARE.
  */
 
+using DoubleCorvid.CorvidClientHandler.Framework.RateLimiting;
+using Microsoft.Extensions.Logging;
+
 namespace DoubleCorvid.CorvidClientHandler.Framework.Config;
 
 public interface ICorvidHttpClientRateLimiterConfig {
+    /// <summary>
+    /// The logger that this factory should use.
+    /// </summary>
+    ILogger<ICorvidHttpClientRateLimiter>? Logger { get; }
+
     /// <summary>
     /// The delay between each request.
     /// </summary>

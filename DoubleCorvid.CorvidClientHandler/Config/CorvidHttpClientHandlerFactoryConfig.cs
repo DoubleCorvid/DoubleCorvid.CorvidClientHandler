@@ -19,11 +19,16 @@
  * IN THE SOFTWARE.
  */
 
+using DoubleCorvid.CorvidClientHandler.Framework;
 using DoubleCorvid.CorvidClientHandler.Framework.Config;
+
+using Microsoft.Extensions.Logging;
 
 namespace DoubleCorvid.CorvidClientHandler.Config;
 
 public class CorvidHttpClientHandlerFactoryConfig : ICorvidHttpClientHandlerFactoryConfig {
+    public ILogger<ICorvidHttpClientHandlerFactory>? Logger { get; init; }
+    
     public required IHttpClientFactory ClientFactory { get; init; }
 
     public required ICorvidHttpClientHandlerConfig DefaultHandlerConfig { get; init; }
