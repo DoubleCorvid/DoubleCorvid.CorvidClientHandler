@@ -61,8 +61,7 @@ public class CorvidHttpClientRateLimiter : ICorvidHttpClientRateLimiter {
             _processing = true;
 
             while (_processing && !token.IsCancellationRequested) {
-                if (!_entries.IsEmpty
-                && _entries.TryDequeue (out var entry)
+                if (_entries.TryDequeue (out var entry)
                 && entry is not null
                 && !entry.Token.IsCancelled) {
                     await ProcessEntry (entry);
@@ -124,7 +123,7 @@ public class CorvidHttpClientRateLimiter : ICorvidHttpClientRateLimiter {
 
         int maxAttempts = requestConfig.MaxRetryAttempts > 0 ? requestConfig.MaxRetryAttempts : Config.MaxRetryAttempts;
 
-        ICorvidHttpClientRequestResponse response;
+        ICorvidHttpClientRequestResponse? response = null;
 
         Func<int, int> delayCalc = requestConfig.UseDefaultRetryDelay
                                     ? Config.CalculateDefaultDelayInMillisecondsForRetryAttempt
@@ -136,12 +135,19 @@ public class CorvidHttpClientRateLimiter : ICorvidHttpClientRateLimiter {
 
                 delay = 0;
             }
-
-            response = await func (requestConfig);
+            
+            try {
+                response = await func (requestConfig);
+            }
+            catch {
+                // TODO Not sure how I want to handle these exceptions just yet
+                // so rethrow to deal with as needed.
+                throw;
+            }
 
             await UpdateLastRequestTimeStamp (requestConfig.CancellationToken);
 
-            if (requestConfig.WithRetry && ShouldRetryRequest (attempts, maxAttempts, response?.HttpResponseMessage.StatusCode)) {
+            if (requestConfig.WithRetry && ShouldRetryRequest (attempts, maxAttempts, response?.HttpResponseMessage)) {
                 if (response is null) {
                     delay = Config.RateLimitDelay;
                 }
@@ -207,8 +213,16 @@ public class CorvidHttpClientRateLimiter : ICorvidHttpClientRateLimiter {
         return delay;
     }
 
-    private bool ShouldRetryRequest (int currentAttempt, int maxAttempts, HttpStatusCode? code) {
-        return code is null || (currentAttempt < maxAttempts &&!Config.NonretryStatusCodes.Contains ((HttpStatusCode) code));
+    private bool ShouldRetryRequest (int currentAttempt, int maxAttempts, HttpResponseMessage? message) {
+        if (message is null) {
+            return true;
+        }
+
+        if (message.IsSuccessStatusCode) {
+            return false;
+        }
+
+        return currentAttempt < maxAttempts && !Config.NonretryStatusCodes.Contains (message.StatusCode);
     }
 
     // protected async Task<ICorvidHttpClientRequestToken> ExecuteRequestWithRateLimitAndRetryAsync (ICorvidHttpClientRequestConfig requestConfig, Func<ICorvidHttpClientRequestConfig, Task<ICorvidHttpClientRequestResponse>> func) {
