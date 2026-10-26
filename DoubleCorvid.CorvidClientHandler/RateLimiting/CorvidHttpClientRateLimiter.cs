@@ -127,7 +127,7 @@ public class CorvidHttpClientRateLimiter : ICorvidHttpClientRateLimiter {
         ICorvidHttpClientRequestResponse response;
 
         Func<int, int> delayCalc = requestConfig.UseDefaultRetryDelay
-                                    ? Config.DefaultDelayInMillisecondsForRetryAttemptCalculator
+                                    ? Config.CalculateDefaultDelayInMillisecondsForRetryAttempt
                                     : requestConfig.CalculateDelayInMillisecondsForRetryAttempt;
         
         do {
