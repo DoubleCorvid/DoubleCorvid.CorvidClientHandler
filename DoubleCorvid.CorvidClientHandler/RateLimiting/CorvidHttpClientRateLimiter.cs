@@ -20,6 +20,8 @@
  */
 
 using System.Collections.Concurrent;
+using System.Net;
+
 using DoubleCorvid.CorvidClientHandler.Framework;
 using DoubleCorvid.CorvidClientHandler.Framework.Config;
 using DoubleCorvid.CorvidClientHandler.Framework.RateLimiting;
@@ -27,6 +29,8 @@ using DoubleCorvid.CorvidClientHandler.Framework.RateLimiting;
 namespace DoubleCorvid.CorvidClientHandler.RateLimiting;
 
 public class CorvidHttpClientRateLimiter : ICorvidHttpClientRateLimiter {
+    public const string RetryAfter = "Retry-After";
+
     public ICorvidHttpClientRateLimiterConfig Config { get; }
 
     private readonly ConcurrentQueue<ICorvidHttpClientRateLimiterEntry> _entries = [ ];
@@ -113,20 +117,45 @@ public class CorvidHttpClientRateLimiter : ICorvidHttpClientRateLimiter {
         _entries.Clear ();
     }
 
-    private async Task<ICorvidHttpClientRequestResponse> ExecuteRequest (ICorvidHttpClientRequestConfig requestConfig, Func<ICorvidHttpClientRequestConfig, Task<ICorvidHttpClientRequestResponse>> func) {
-        var delay = Config.RateLimitDelay;
+    private async Task<ICorvidHttpClientRequestResponse?> ExecuteRequest (ICorvidHttpClientRequestConfig requestConfig, Func<ICorvidHttpClientRequestConfig, Task<ICorvidHttpClientRequestResponse>> func) {
+        int delay = Config.RateLimitDelay - GetMilisecondsSinceLastRequest (requestConfig.CancellationToken);
 
-        if (delay > 0) {
-            delay -= GetMilisecondsSinceLastRequest (requestConfig.CancellationToken);
+        int attempts = 0;
+
+        int maxAttempts = requestConfig.MaxRetryAttempts > 0 ? requestConfig.MaxRetryAttempts : Config.MaxRetryAttempts;
+
+        ICorvidHttpClientRequestResponse response;
+
+        Func<int, int> delayCalc = requestConfig.UseDefaultRetryDelay
+                                    ? Config.DefaultDelayInMillisecondsForRetryAttemptCalculator
+                                    : requestConfig.CalculateDelayInMillisecondsForRetryAttempt;
+        
+        do {
+            if (delay > 0) {
+                await Task.Delay (delay, requestConfig.CancellationToken);
+
+                delay = 0;
+            }
+
+            response = await func (requestConfig);
+
+            await UpdateLastRequestTimeStamp (requestConfig.CancellationToken);
+
+            if (requestConfig.WithRetry && ShouldRetryRequest (attempts, maxAttempts, response?.HttpResponseMessage.StatusCode)) {
+                if (response is null) {
+                    delay = Config.RateLimitDelay;
+                }
+                else if (DoesResponseHaveRetryAfterHeader (response?.HttpResponseMessage)) {
+                    delay = GetReponseRetryAfterInSeconds (response?.HttpResponseMessage.Headers.GetValues (RetryAfter) ?? []);
+                }
+                else if (!response?.HttpResponseMessage.IsSuccessStatusCode ?? true) {
+                    delay = delayCalc (attempts);
+                }
+            }
+
+            attempts++;
         }
-
-        if (delay > 0) {
-            await Task.Delay (delay, requestConfig.CancellationToken);
-        }
-
-        var response = await func (requestConfig);
-
-        await UpdateLastRequestTimeStamp (requestConfig.CancellationToken);
+        while (delay > 0 && attempts <= maxAttempts && !requestConfig.CancellationToken.IsCancellationRequested);
 
         return response;
     }
@@ -146,6 +175,82 @@ public class CorvidHttpClientRateLimiter : ICorvidHttpClientRateLimiter {
 
         return span.Milliseconds;
     }
+
+    private static bool DoesResponseHaveRetryAfterHeader (HttpResponseMessage? response) => response?.Headers.Contains ("Try-After") ?? false;
+
+    private static int GetReponseRetryAfterInSeconds (IEnumerable<string> retryAfterHeaders) {
+        if (!retryAfterHeaders.Any ()) {
+            return 0;
+        }
+
+        int delay = 0;
+
+        foreach (var value in retryAfterHeaders) {
+            delay += ParseDelayInSeconds (value);
+        }
+
+        return delay;
+    }
+
+    private static int ParseDelayInSeconds (string header) {
+        int delay = 0;
+
+        if (int.TryParse (header, out int parsed)) {
+            delay = parsed;
+        }
+        else if (DateTime.TryParse (header, out var date)) {
+            var span = date - DateTime.UtcNow;
+
+            delay = span.Seconds;
+        }
+
+        return delay;
+    }
+
+    private bool ShouldRetryRequest (int currentAttempt, int maxAttempts, HttpStatusCode? code) {
+        return code is null || (currentAttempt < maxAttempts &&!Config.NonretryStatusCodes.Contains ((HttpStatusCode) code));
+    }
+
+    // protected async Task<ICorvidHttpClientRequestToken> ExecuteRequestWithRateLimitAndRetryAsync (ICorvidHttpClientRequestConfig requestConfig, Func<ICorvidHttpClientRequestConfig, Task<ICorvidHttpClientRequestResponse>> func) {
+    //     var retryCount = 0;
+
+    //     ICorvidHttpClientRequestToken token;
+
+    //     Func<int, int> delayCalc = requestConfig.UseDefaultRetryDelay
+    //                                ? Config.CalculateDelayInMillisecondsForRetryAttempt
+    //                                : requestConfig.CalculateDelayInMillisecondsForRetryAttempt;
+
+    //     int delay = -1;
+
+    //     do {
+    //         token = ExecuteRequestWithRateLimit (requestConfig, func);
+
+    //         if (requestConfig.CancellationToken.IsCancellationRequested) {
+    //             return token;
+    //         }
+
+    //         await token.WaitUntilCompleteAsync ();
+
+    //         if (token.IsSuccess) {
+    //             return token;
+    //         }
+    //         else if (DoesResponseHaveRetryAfterHeader (token.Response?.HttpResponseMessage)) {
+    //             delay = GetReponseRetryAfterInSeconds (token.Response?.HttpResponseMessage.Headers.GetValues (RetryAfter) ?? []);
+    //         }
+    //         else if (requestConfig.UseDefaultRetryDelay) {
+    //             delay = Config.CalculateDelayInMillisecondsForRetryAttempt (retryCount++);
+    //         }
+    //         else {
+    //             delay = requestConfig.CalculateDelayInMillisecondsForRetryAttempt (retryCount++);
+    //         }
+
+    //         await Task.Delay (delay, requestConfig.CancellationToken);
+    //     } while (delay > 0 && !requestConfig.CancellationToken.IsCancellationRequested);
+
+    //     return token;
+    // }
+
+    // protected bool ShouldRetryRequest (HttpStatusCode code) => Config.NonretryStatusCodes.Contains (code);m
 
     protected virtual void Dispose (bool disposing) {
         if (!disposed) {

@@ -37,41 +37,4 @@ public class CorvidHttpClientHandlerConfig : ICorvidHttpClientHandlerConfig {
     public bool RateLimitRequests { get; init; } = false;
 
     public required ICorvidHttpClientRateLimiter RateLimiter { get; init; }
-
-    public List<HttpStatusCode> NonretryStatusCodes { get; init; } = [
-        HttpStatusCode.MovedPermanently,
-        HttpStatusCode.TemporaryRedirect,
-        HttpStatusCode.SeeOther,
-        HttpStatusCode.NotModified,
-        HttpStatusCode.TemporaryRedirect,
-        HttpStatusCode.PermanentRedirect,
-        HttpStatusCode.BadRequest,
-        HttpStatusCode.Unauthorized,
-        HttpStatusCode.Forbidden,
-        HttpStatusCode.NotFound,
-        HttpStatusCode.MethodNotAllowed,
-        HttpStatusCode.NotAcceptable,
-        HttpStatusCode.Gone,
-        HttpStatusCode.InternalServerError,
-        HttpStatusCode.NotImplemented,
-        HttpStatusCode.BadGateway,
-        HttpStatusCode.ServiceUnavailable,
-        HttpStatusCode.HttpVersionNotSupported,
-        HttpStatusCode.VariantAlsoNegotiates,
-        HttpStatusCode.InsufficientStorage,
-        HttpStatusCode.LoopDetected,
-        HttpStatusCode.NetworkAuthenticationRequired,
-    ];
-
-    public int MaxRetryAttempts { get; init; } = 4;
-
-    public int CalculateDelayInMillisecondsForRetryAttempt (int attempt) {
-        if (attempt > MaxRetryAttempts) {
-            return -1;
-        }
-
-        int jitter = DateTime.UtcNow.Millisecond % (int) MathF.Pow (2, attempt - 1);
-
-        return (int) MathF.Pow (2, attempt - 1) + jitter;
-    }
 }

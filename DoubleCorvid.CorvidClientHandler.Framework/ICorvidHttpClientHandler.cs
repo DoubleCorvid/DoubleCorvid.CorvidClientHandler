@@ -39,33 +39,68 @@ public interface ICorvidHttpClientHandler {
     /// </summary>
     /// <param name="config">The requests parameters</param>
     /// <returns>A token for this request.</returns>
-    Task<ICorvidHttpClientRequestToken> GetAsync (ICorvidHttpClientRequestConfig config);
+    ICorvidHttpClientRequestToken Get (ICorvidHttpClientRequestConfig config);
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="requestConfig"></param>
+    /// <returns></returns>
+    Task<ICorvidHttpClientRequestToken> GetAndWaitAsync (ICorvidHttpClientRequestConfig requestConfig);
 
     /// <summary>
     /// Execute a patch request.
     /// </summary>
     /// <param name="config">The requests parameters</param>
     /// <returns>A token for this request.</returns>
-    Task<ICorvidHttpClientRequestToken> PatchAsync (ICorvidHttpClientRequestConfig config);
+    ICorvidHttpClientRequestToken Patch (ICorvidHttpClientRequestConfig config);
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="requestConfig"></param>
+    /// <returns></returns>
+    Task<ICorvidHttpClientRequestToken> PatchAndWaitAsync (ICorvidHttpClientRequestConfig requestConfig);
 
     /// <summary>
     /// Execute a post request.
     /// </summary>
     /// <param name="config">The requests parameters</param>
     /// <returns>A token for this request.</returns>
-    Task<ICorvidHttpClientRequestToken> PostAsync (ICorvidHttpClientRequestConfig config);
+    ICorvidHttpClientRequestToken Post (ICorvidHttpClientRequestConfig config);
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="requestConfig"></param>
+    /// <returns></returns>
+    Task<ICorvidHttpClientRequestToken> PostAndWaitAsync (ICorvidHttpClientRequestConfig requestConfig);
 
     /// <summary>
     /// Execute a put request.
     /// </summary>
     /// <param name="config">The requests parameters</param>
     /// <returns>A token for this request.</returns>
-    Task<ICorvidHttpClientRequestToken> PutAsync (ICorvidHttpClientRequestConfig config);
+    ICorvidHttpClientRequestToken Put (ICorvidHttpClientRequestConfig config);
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="requestConfig"></param>
+    /// <returns></returns>
+    Task<ICorvidHttpClientRequestToken> PutAndWaitAsync (ICorvidHttpClientRequestConfig requestConfig);
 
     /// <summary>
     /// Execute a delete request.
     /// </summary>
     /// <param name="config">The requests parameters</param>
     /// <returns>A token for this request.</returns>
-    Task<ICorvidHttpClientRequestToken> DeleteAsync (ICorvidHttpClientRequestConfig config);
+    ICorvidHttpClientRequestToken Delete (ICorvidHttpClientRequestConfig config);
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="requestConfig"></param>
+    /// <returns></returns>
+    Task<ICorvidHttpClientRequestToken> DeleteAndWaitAsync (ICorvidHttpClientRequestConfig requestConfig);
 }

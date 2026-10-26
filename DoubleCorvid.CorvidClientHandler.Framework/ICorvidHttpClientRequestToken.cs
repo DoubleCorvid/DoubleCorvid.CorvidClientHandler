@@ -21,6 +21,7 @@
 
 namespace DoubleCorvid.CorvidClientHandler.Framework;
 
+// TODO needs a cancel token
 public interface ICorvidHttpClientRequestToken {
     /// <summary>
     /// Was the request rejected?

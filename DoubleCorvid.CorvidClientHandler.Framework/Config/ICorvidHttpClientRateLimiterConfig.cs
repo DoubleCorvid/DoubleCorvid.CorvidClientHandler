@@ -19,6 +19,8 @@
  * IN THE SOFTWARE.
  */
 
+using System.Net;
+
 using DoubleCorvid.CorvidClientHandler.Framework.RateLimiting;
 using Microsoft.Extensions.Logging;
 
@@ -26,14 +28,9 @@ namespace DoubleCorvid.CorvidClientHandler.Framework.Config;
 
 public interface ICorvidHttpClientRateLimiterConfig {
     /// <summary>
-    /// The logger that this factory should use.
+    /// The logger that this rate limiter should use.
     /// </summary>
     ILogger<ICorvidHttpClientRateLimiter>? Logger { get; }
-
-    /// <summary>
-    /// The delay between each request.
-    /// </summary>
-    int RateLimitDelay { get; }
 
     /// <summary>
     /// The default cancellation token.
@@ -41,7 +38,23 @@ public interface ICorvidHttpClientRateLimiterConfig {
     CancellationToken DefaultCancellationToken { get; }
 
     /// <summary>
+    /// The delay between each request.
+    /// </summary>
+    int RateLimitDelay { get; }
+
+    /// <summary>
     /// Should the rate limiter start after being constructed?
     /// </summary>
     bool StartAfterConstruction { get; }
+
+    List<HttpStatusCode> NonretryStatusCodes { get; }
+
+    int MaxRetryAttempts { get; }
+
+    int RetryDelayPerAttemptInMilliseconds { get; }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    int CalculateDefaultDelayInMillisecondsForRetryAttempt (int attempt);
 }

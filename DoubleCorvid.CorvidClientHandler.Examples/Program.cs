@@ -35,176 +35,176 @@ public class Program {
     private static readonly CancellationTokenSource _cancellationTokenSource = new ();
 
     public static async Task Main () {
-        await ExecuteJsonPlaceholderExamples ();
+    //     await ExecuteJsonPlaceholderExamples ();
     }
 
-    private static async Task ExecuteJsonPlaceholderExamples () {
-        var ratelimiter = new CorvidHttpClientRateLimiter (new CorvidHttpClientRateLimiterConfig {
-            DefaultCancellationToken = _cancellationTokenSource.Token
-        });
+    // private static async Task ExecuteJsonPlaceholderExamples () {
+    //     var ratelimiter = new CorvidHttpClientRateLimiter (new CorvidHttpClientRateLimiterConfig {
+    //         DefaultCancellationToken = _cancellationTokenSource.Token
+    //     });
 
-        var handlerFactory = BuildHandlerFactory (ratelimiter);
+    //     var handlerFactory = BuildHandlerFactory (ratelimiter);
 
-        var client = handlerFactory.CreateHandler (_clientName);
+    //     var client = handlerFactory.CreateHandler (_clientName);
 
-        _ = ratelimiter.Run ();
+    //     _ = ratelimiter.Run ();
 
-        await ExecuteGetExampleAsync (client);
+    //     await ExecuteGetExampleAsync (client);
 
-        await ExecutePatchExampleAsync (client);
+    //     await ExecutePatchExampleAsync (client);
 
-        await ExecutePostExampleAsync (client);
+    //     await ExecutePostExampleAsync (client);
 
-        await ExecutePutExampleAsync (client);
+    //     await ExecutePutExampleAsync (client);
 
-        await ExecuteDeleteExampleAsync (client);
+    //     await ExecuteDeleteExampleAsync (client);
 
-        ratelimiter.Stop ();
+    //     ratelimiter.Stop ();
 
-        _cancellationTokenSource.Cancel ();
-    }
+    //     _cancellationTokenSource.Cancel ();
+    // }
 
-    private static async Task ExecuteGetExampleAsync (ICorvidHttpClientHandler client) {
-        Console.WriteLine ("Executing get example...");
+    // private static async Task ExecuteGetExampleAsync (ICorvidHttpClientHandler client) {
+    //     Console.WriteLine ("Executing get example...");
 
-        var token = await client.GetAsync (new CorvidHttpClientRequestConfig {
-            Route = "posts/1",
-            HttpCompletionOption = HttpCompletionOption.ResponseContentRead,
-            CancellationToken = _cancellationTokenSource.Token
-        });
+    //     var token = await client.Get (new CorvidHttpClientRequestConfig {
+    //         Route = "posts/1",
+    //         HttpCompletionOption = HttpCompletionOption.ResponseContentRead,
+    //         CancellationToken = _cancellationTokenSource.Token
+    //     });
 
-        if (token is null || token.IsRejected) {
-            Console.WriteLine ("Delete request was either rejected, or didn't return a token.");
-            return;
-        }
+    //     if (token is null || token.IsRejected) {
+    //         Console.WriteLine ("Delete request was either rejected, or didn't return a token.");
+    //         return;
+    //     }
 
-        var response = await token.WaitUntilCompleteAsync ();
+    //     var response = await token.WaitUntilCompleteAsync ();
 
-        if (token.IsSuccess && (response?.HttpResponseMessage.IsSuccessStatusCode ?? false)) {
-            var str = await response.HttpResponseMessage.Content.ReadAsStringAsync ();
+    //     if (token.IsSuccess && (response?.HttpResponseMessage.IsSuccessStatusCode ?? false)) {
+    //         var str = await response.HttpResponseMessage.Content.ReadAsStringAsync ();
 
-            Console.WriteLine ($"Get example succeded:\n{str}");
-        }
-        else {
-            Console.WriteLine ($"Get example failed.");
-        }
-    }
+    //         Console.WriteLine ($"Get example succeded:\n{str}");
+    //     }
+    //     else {
+    //         Console.WriteLine ($"Get example failed.");
+    //     }
+    // }
 
-    private static async Task ExecutePatchExampleAsync (ICorvidHttpClientHandler client) {
-        Console.WriteLine ("\nExecuting patch example...");
+    // private static async Task ExecutePatchExampleAsync (ICorvidHttpClientHandler client) {
+    //     Console.WriteLine ("\nExecuting patch example...");
 
-        var token = await client.PatchAsync (new CorvidHttpClientRequestConfig {
-            Route = "posts/1",
-            HttpCompletionOption = HttpCompletionOption.ResponseContentRead,
-            Content = new StringContent (JsonSerializer.Serialize<object> (new {
-                Title = "foo"
-            })),
-            CancellationToken = _cancellationTokenSource.Token
-        });
+    //     var token = await client.Patch (new CorvidHttpClientRequestConfig {
+    //         Route = "posts/1",
+    //         HttpCompletionOption = HttpCompletionOption.ResponseContentRead,
+    //         Content = new StringContent (JsonSerializer.Serialize<object> (new {
+    //             Title = "foo"
+    //         })),
+    //         CancellationToken = _cancellationTokenSource.Token
+    //     });
 
-        if (token is null || token.IsRejected) {
-            Console.WriteLine ("Patch request was either rejected, or didn't return a token.");
-            return;
-        }
+    //     if (token is null || token.IsRejected) {
+    //         Console.WriteLine ("Patch request was either rejected, or didn't return a token.");
+    //         return;
+    //     }
 
-        var response = await token.WaitUntilCompleteAsync ();
+    //     var response = await token.WaitUntilCompleteAsync ();
 
-        if (token.IsSuccess && (response?.HttpResponseMessage.IsSuccessStatusCode ?? false)) {
-            var str = await response.HttpResponseMessage.Content.ReadAsStringAsync ();
+    //     if (token.IsSuccess && (response?.HttpResponseMessage.IsSuccessStatusCode ?? false)) {
+    //         var str = await response.HttpResponseMessage.Content.ReadAsStringAsync ();
 
-            Console.WriteLine ($"Patch example succeded:\n{str}");
-        }
-        else {
-            Console.WriteLine ($"Patch example failed.");
-        }
-    }
+    //         Console.WriteLine ($"Patch example succeded:\n{str}");
+    //     }
+    //     else {
+    //         Console.WriteLine ($"Patch example failed.");
+    //     }
+    // }
 
-    private static async Task ExecutePostExampleAsync (ICorvidHttpClientHandler client) {
-        Console.WriteLine ("\nExecuting post example...");
+    // private static async Task ExecutePostExampleAsync (ICorvidHttpClientHandler client) {
+    //     Console.WriteLine ("\nExecuting post example...");
 
-        var token = await client.PostAsync (new CorvidHttpClientRequestConfig {
-            Route = "posts",
-            HttpCompletionOption = HttpCompletionOption.ResponseContentRead,
-            Content = new StringContent (JsonSerializer.Serialize<object> (new {
-                Title = "foo",
-                Body = "bar",
-                UserId = 1,
-            })),
-            CancellationToken = _cancellationTokenSource.Token
-        });
+    //     var token = await client.Post (new CorvidHttpClientRequestConfig {
+    //         Route = "posts",
+    //         HttpCompletionOption = HttpCompletionOption.ResponseContentRead,
+    //         Content = new StringContent (JsonSerializer.Serialize<object> (new {
+    //             Title = "foo",
+    //             Body = "bar",
+    //             UserId = 1,
+    //         })),
+    //         CancellationToken = _cancellationTokenSource.Token
+    //     });
 
-        if (token is null || token.IsRejected) {
-            Console.WriteLine ("Delete request was either rejected, or didn't return a token.");
-            return;
-        }
+    //     if (token is null || token.IsRejected) {
+    //         Console.WriteLine ("Delete request was either rejected, or didn't return a token.");
+    //         return;
+    //     }
 
-        var response = await token.WaitUntilCompleteAsync ();
+    //     var response = await token.WaitUntilCompleteAsync ();
 
-        if (token.IsSuccess && (response?.HttpResponseMessage.IsSuccessStatusCode ?? false)) {
-            var str = await response.HttpResponseMessage.Content.ReadAsStringAsync ();
+    //     if (token.IsSuccess && (response?.HttpResponseMessage.IsSuccessStatusCode ?? false)) {
+    //         var str = await response.HttpResponseMessage.Content.ReadAsStringAsync ();
 
-            Console.WriteLine ($"Post example succeded:\n{str}");
-        }
-        else {
-            Console.WriteLine ($"Post example failed.");
-        }
-    }
+    //         Console.WriteLine ($"Post example succeded:\n{str}");
+    //     }
+    //     else {
+    //         Console.WriteLine ($"Post example failed.");
+    //     }
+    // }
 
-    private static async Task ExecutePutExampleAsync (ICorvidHttpClientHandler client) {
-        Console.WriteLine ("\nExecuting put example...");
+    // private static async Task ExecutePutExampleAsync (ICorvidHttpClientHandler client) {
+    //     Console.WriteLine ("\nExecuting put example...");
 
-        var token = await client.PutAsync (new CorvidHttpClientRequestConfig {
-            Route = "posts/1",
-            HttpCompletionOption = HttpCompletionOption.ResponseContentRead,
-            Content = new StringContent (JsonSerializer.Serialize<object> (new {
-                Id = 1,
-                Title = "foo",
-                Body = "bar",
-                UserId = 1,
-            })),
-            CancellationToken = _cancellationTokenSource.Token
-        });
+    //     var token = await client.Put (new CorvidHttpClientRequestConfig {
+    //         Route = "posts/1",
+    //         HttpCompletionOption = HttpCompletionOption.ResponseContentRead,
+    //         Content = new StringContent (JsonSerializer.Serialize<object> (new {
+    //             Id = 1,
+    //             Title = "foo",
+    //             Body = "bar",
+    //             UserId = 1,
+    //         })),
+    //         CancellationToken = _cancellationTokenSource.Token
+    //     });
 
-        if (token is null || token.IsRejected) {
-            Console.WriteLine ("Put request was either rejected, or didn't return a token.");
-            return;
-        }
+    //     if (token is null || token.IsRejected) {
+    //         Console.WriteLine ("Put request was either rejected, or didn't return a token.");
+    //         return;
+    //     }
 
-        var response = await token.WaitUntilCompleteAsync ();
+    //     var response = await token.WaitUntilCompleteAsync ();
 
-        if (token.IsSuccess && (response?.HttpResponseMessage.IsSuccessStatusCode ?? false)) {
-            var str = await response.HttpResponseMessage.Content.ReadAsStringAsync ();
+    //     if (token.IsSuccess && (response?.HttpResponseMessage.IsSuccessStatusCode ?? false)) {
+    //         var str = await response.HttpResponseMessage.Content.ReadAsStringAsync ();
 
-            Console.WriteLine ($"Put example succeded:\n{str}");
-        }
-        else {
-            Console.WriteLine ($"Put example failed.");
-        }
-    }
+    //         Console.WriteLine ($"Put example succeded:\n{str}");
+    //     }
+    //     else {
+    //         Console.WriteLine ($"Put example failed.");
+    //     }
+    // }
 
-    private static async Task ExecuteDeleteExampleAsync (ICorvidHttpClientHandler client) {
-        Console.WriteLine ("\nExecuting delete example...");
+    // private static async Task ExecuteDeleteExampleAsync (ICorvidHttpClientHandler client) {
+    //     Console.WriteLine ("\nExecuting delete example...");
 
-        var token = await client.DeleteAsync (new CorvidHttpClientRequestConfig {
-            Route = "posts/1",
-            HttpCompletionOption = HttpCompletionOption.ResponseContentRead,
-            CancellationToken = _cancellationTokenSource.Token
-        });
+    //     var token = await client.Delete (new CorvidHttpClientRequestConfig {
+    //         Route = "posts/1",
+    //         HttpCompletionOption = HttpCompletionOption.ResponseContentRead,
+    //         CancellationToken = _cancellationTokenSource.Token
+    //     });
 
-        if (token is null || token.IsRejected) {
-            Console.WriteLine ("Delete request was either rejected, or didn't return a token.");
-            return;
-        }
+    //     if (token is null || token.IsRejected) {
+    //         Console.WriteLine ("Delete request was either rejected, or didn't return a token.");
+    //         return;
+    //     }
 
-        var response = await token.WaitUntilCompleteAsync ();
+    //     var response = await token.WaitUntilCompleteAsync ();
 
-        if (token.IsSuccess && (response?.HttpResponseMessage.IsSuccessStatusCode ?? false)) {
-            Console.WriteLine ($"Delete example succeded. (It's hard to display an object that doesn't exist :) )");
-        }
-        else {
-            Console.WriteLine ($"Delete example failed.");
-        }
-    }
+    //     if (token.IsSuccess && (response?.HttpResponseMessage.IsSuccessStatusCode ?? false)) {
+    //         Console.WriteLine ($"Delete example succeded. (It's hard to display an object that doesn't exist :) )");
+    //     }
+    //     else {
+    //         Console.WriteLine ($"Delete example failed.");
+    //     }
+    // }
 
     private static ICorvidHttpClientFactory BuildHttpClientFactory () {
         var builder = new CorvidHttpClientFactoryBuilder {

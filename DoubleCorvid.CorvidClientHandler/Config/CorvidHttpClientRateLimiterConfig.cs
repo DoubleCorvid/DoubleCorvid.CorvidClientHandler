@@ -19,6 +19,8 @@
  * IN THE SOFTWARE.
  */
 
+using System.Net;
+
 using DoubleCorvid.CorvidClientHandler.Framework.Config;
 using DoubleCorvid.CorvidClientHandler.Framework.RateLimiting;
 
@@ -33,5 +35,42 @@ public class CorvidHttpClientRateLimiterConfig : ICorvidHttpClientRateLimiterCon
 
     public required CancellationToken DefaultCancellationToken { get; init; }
 
-    public bool StartAfterConstruction { get; init; } = true;
+    public bool StartAfterConstruction { get; init; } = true;  
+      
+    public List<HttpStatusCode> NonretryStatusCodes { get; init; } = [
+        HttpStatusCode.MovedPermanently,
+        HttpStatusCode.TemporaryRedirect,
+        HttpStatusCode.SeeOther,
+        HttpStatusCode.NotModified,
+        HttpStatusCode.TemporaryRedirect,
+        HttpStatusCode.PermanentRedirect,
+        HttpStatusCode.BadRequest,
+        HttpStatusCode.Unauthorized,
+        HttpStatusCode.Forbidden,
+        HttpStatusCode.NotFound,
+        HttpStatusCode.MethodNotAllowed,
+        HttpStatusCode.NotAcceptable,
+        HttpStatusCode.Gone,
+        HttpStatusCode.InternalServerError,
+        HttpStatusCode.NotImplemented,
+        HttpStatusCode.BadGateway,
+        HttpStatusCode.ServiceUnavailable,
+        HttpStatusCode.HttpVersionNotSupported,
+        HttpStatusCode.VariantAlsoNegotiates,
+        HttpStatusCode.InsufficientStorage,
+        HttpStatusCode.LoopDetected,
+        HttpStatusCode.NetworkAuthenticationRequired,
+    ];
+
+    public int MaxRetryAttempts { get; init; }
+
+    public int RetryDelayPerAttemptInMilliseconds { get; init; }
+
+    public int CalculateDefaultDelayInMillisecondsForRetryAttempt (int attempt) {
+        if (attempt > MaxRetryAttempts) {
+            return -1;
+        }
+
+        return RetryDelayPerAttemptInMilliseconds * (int) MathF.Pow (2, attempt - 1);
+    }
 }

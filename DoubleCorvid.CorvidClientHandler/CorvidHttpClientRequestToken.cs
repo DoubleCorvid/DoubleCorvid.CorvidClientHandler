@@ -23,6 +23,7 @@ using DoubleCorvid.CorvidClientHandler.Framework;
 
 namespace DoubleCorvid.CorvidClientHandler;
 
+// TODO needs a cancel token
 public class CorvidHttpClientRequestToken : ICorvidHttpClientRequestToken {
     private readonly TaskCompletionSource<ICorvidHttpClientRequestResponse?> taskCompletionSource = new ();
 

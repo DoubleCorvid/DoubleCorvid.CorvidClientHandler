@@ -46,21 +46,4 @@ public interface ICorvidHttpClientHandlerConfig {
     /// The rate limiter that this client will use.
     /// </summary>
     ICorvidHttpClientRateLimiter RateLimiter { get; }
-
-    /// <summary>
-    /// The status codes that shouldn't be retried.
-    /// </summary>
-    List<HttpStatusCode> NonretryStatusCodes { get; }
-
-    /// <summary>
-    /// Max retry attempts.
-    /// </summary>
-    int MaxRetryAttempts { get; }
-
-    /// <summary>
-    /// Calculate the delay for attempt number `attempt` in milliseconds.
-    /// </summary>
-    /// <param name="attempt">Which attempt to calculate for, starting at 1.</param>
-    /// <returns>Delay length in milliseconds.</returns>
-    int CalculateDelayInMillisecondsForRetryAttempt (int attempt);
 }
