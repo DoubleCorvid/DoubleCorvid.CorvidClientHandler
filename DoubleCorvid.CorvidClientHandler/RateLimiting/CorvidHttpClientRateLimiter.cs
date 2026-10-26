@@ -100,11 +100,16 @@ public class CorvidHttpClientRateLimiter : ICorvidHttpClientRateLimiter {
             token.Expire ();
         }
         else {
-            var response = await ExecuteRequest (config, entry.Requester);
+            try {
+                var response = await ExecuteRequest (config, entry.Requester);
 
-            token.Response = response;
+                token.Response = response;
 
-            token.Complete ();
+                token.Complete ();
+            }
+            catch {
+                token.Cancel ();
+            }
         }
     }
 
@@ -136,14 +141,7 @@ public class CorvidHttpClientRateLimiter : ICorvidHttpClientRateLimiter {
                 delay = 0;
             }
             
-            try {
-                response = await func (requestConfig);
-            }
-            catch {
-                // TODO Not sure how I want to handle these exceptions just yet
-                // so rethrow to deal with as needed.
-                throw;
-            }
+            response = await func (requestConfig);
 
             await UpdateLastRequestTimeStamp (requestConfig.CancellationToken);
 
